@@ -209,24 +209,19 @@ class AuthResponse(ApiResponse):
 class NoneResource(Resource):
 
     def validate(self, requested: list[str]):
-        try:
-            data = request.get_json() or request.form
-            if not all(field in data for field in requested):
-                return ApiResponse.error(400, "Missing required fields", request.method)
-            
-            data = request.get_json()
-            if not data:
-                return ApiResponse.error(400, "Request body must be JSON", request.method)
-            
-            missing_fields = [field for field in requested if field not in data]
-            if missing_fields:
-                return ApiResponse.error(400, f"Missing required fields: {', '.join(missing_fields)}", request.method)
-            
-            return data
-        except BadRequest:
-            return ApiResponse.error(400, "Invalid request data", request.method)
-        except Exception as e:
-            return ApiResponse.error(500, str(e), request.method)
+        data = request.get_json() or request.form
+        if not all(field in data for field in requested):
+            raise BadRequest("Missing required fields")
+        
+        data = request.get_json()
+        if not data:
+            raise BadRequest("Request body must be JSON")
+        
+        missing_fields = [field for field in requested if field not in data]
+        if missing_fields:
+            raise BadRequest(f"Missing required fields: {', '.join(missing_fields)}")
+        
+        return data
 
 class uValidate(BaseModel):
     email: EmailStr
@@ -239,7 +234,24 @@ class uValidate(BaseModel):
         
         return generate_password_hash(password)
 
+class pValidate(BaseModel):
+    title: str
+    description: str
+
+    @field_validator("title")
+    def valid_title(cls, title):
+        if len(title) < 3 or len(title) > 16:
+            raise BadRequest("The title length must not be less than 3 and exceed 16!")
+        return title
+        
+    @field_validator("description")
+    def valid_description(cls, description):
+        if len(description) > 1024:
+            raise BadRequest("The description length must not be exceed 1024!")
+        return description
+
 __all__ = [
     "NoneResource", 
-    "ApiResponse", "AuthResponse", "uValidate",
+    "ApiResponse", "AuthResponse",
+    "uValidate", "pValidate"
 ]
