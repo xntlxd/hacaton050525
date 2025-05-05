@@ -1,0 +1,7 @@
+flask
+flask-restful
+flask-jwt-extended
+flask_cors
+pydantic
+pydantic[email]
+psycopg2-binary

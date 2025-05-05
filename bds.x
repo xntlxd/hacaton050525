@@ -1,0 +1,8 @@
+CREATE TABLE users(  
+    id int NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    email VARCHAR(64) NOT NULL,
+    password VARCHAR(256) NOT NULL,
+    role INT DEFAULT(1) NOT NULL,
+    create_time DATE,
+    name VARCHAR(255)
+);
