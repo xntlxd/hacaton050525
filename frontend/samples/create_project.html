@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Новый проект | EduPortfolio</title>
+    <link rel="stylesheet" type="text/css" href="./style.css">
+</head>
+<body>
+    <div class="dashboard">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="#" class="sidebar-logo">EduPortfolio</a>
+                <div class="user-profile">
+                    <div class="user-avatar">АИ</div>
+                    <div class="user-info">
+                        <h4>Алексей Иванов</h4>
+                        <p>Участник</p>
+                    </div>
+                </div>
+            </div>
+            <nav class="sidebar-menu">
+                <p class="menu-title">Основное</p>
+                <a href="#" class="menu-item">
+                    <i>📋</i>
+                    <span>Мои проекты</span>
+                </a>
+                <a href="#" class="menu-item">
+                    <i>📊</i>
+                    <span>Аналитика</span>
+                </a>
+                <a href="#" class="menu-item">
+                    <i>👥</i>
+                    <span>Команды</span>
+                </a>
+                <a href="#" class="menu-item">
+                    <i>💬</i>
+                    <span>Сообщения</span>
+                </a>
+                
+                <p class="menu-title">Портфолио</p>
+                <a href="#" class="menu-item">
+                    <i>🎨</i>
+                    <span>Мои работы</span>
+                </a>
+                <a href="#" class="menu-item">
+                    <i>🏆</i>
+                    <span>Достижения</span>
+                </a>
+                
+                <p class="menu-title">Настройки</p>
+                <a href="#" class="menu-item">
+                    <i>⚙️</i>
+                    <span>Профиль</span>
+                </a>
+                <a href="#" class="menu-item active">
+                    <i>➕</i>
+                    <span>Новый проект</span>
+                </a>
+            </nav>
+        </aside>
+        
+        <main class="main-content">
+            <div class="header">
+                <div class="page-title">
+                    <h1>Новый проект</h1>
+                    <p>Создайте новый образовательный проект и начните работу</p>
+                </div>
+            </div>
+            
+            <div class="project-form-container">
+                <form action="#" method="POST">
+                    <div class="form-section">
+                        <h3>Основная информация</h3>
+                        <div class="form-group">
+                            <label for="project-name">Название проекта</label>
+                            <input type="text" id="project-name" name="project-name" class="form-control form-control-lg" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="project-description">Описание проекта</label>
+                            <textarea id="project-description" name="project-description" class="form-control" required></textarea>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="project-category">Категория</label>
+                                    <select id="project-category" name="project-category" class="form-control" required>
+                                        <option value="">Выберите категорию</option>
+                                        <option value="web">Веб-разработка</option>
+                                        <option value="design">Дизайн</option>
+                                        <option value="research">Исследование</option>
+                                        <option value="mobile">Мобильные приложения</option>
+                                        <option value="ai">Искусственный интеллект</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="project-tags">Теги (через запятую)</label>
+                                    <input type="text" id="project-tags" name="project-tags" class="form-control" placeholder="например: дизайн, интерфейсы, UX">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3>Обложка проекта</h3>
+                        <div class="file-upload" id="cover-upload">
+                            <div class="file-upload-icon">📁</div>
+                            <p>Перетащите сюда файл или кликните для выбора</p>
+                            <p><small>Рекомендуемый размер: 1200×600px</small></p>
+                            <input type="file" id="project-cover" name="project-cover" accept="image/*">
+                            <img id="cover-preview" class="preview-image" src="#" alt="Предпросмотр обложки">
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3>Настройки проекта</h3>
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="project-start">Дата начала</label>
+                                    <input type="date" id="project-start" name="project-start" class="form-control" required>
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="project-end">Дата завершения (ожидаемая)</label>
+                                    <input type="date" id="project-end" name="project-end" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="project-visibility">Видимость проекта</label>
+                            <select id="project-visibility" name="project-visibility" class="form-control" required>
+                                <option value="public">Публичный (виден всем)</option>
+                                <option value="private">Приватный (только для участников)</option>
+                                <option value="link">По ссылке (только для тех, у кого есть ссылка)</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3>Команда проекта</h3>
+                        <div class="form-group">
+                            <label>Участники</label>
+                            <div style="margin-top: 0.5rem;">
+                                <span class="member-avatar" style="margin-right: 0.5rem;">АИ</span>
+                                <span class="member-avatar" style="margin-right: 0.5rem;">МП</span>
+                                <button type="button" class="btn" style="padding: 0.3rem 0.8rem; font-size: 0.9rem;">+ Добавить участника</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn">Создать проект</button>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Скрипт для предпросмотра загружаемой обложки
+        document.getElementById('cover-upload').addEventListener('click', function() {
+            document.getElementById('project-cover').click();
+        });
+        
+        document.getElementById('project-cover').addEventListener('change', function(e) {
+            if (e.target.files.length > 0) {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                
+                reader.onload = function(event) {
+                    const preview = document.getElementById('cover-preview');
+                    preview.src = event.target.result;
+                    preview.style.display = 'block';
+                }
+                
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        // Разрешаем перетаскивание файлов
+        const uploadArea = document.getElementById('cover-upload');
+        
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            <!-- uploadArea.style.borderColor = var(--primary); -->
+            uploadArea.style.backgroundColor = 'rgba(124, 111, 161, 0.1)';
+        });
+        
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.style.borderColor = '#ddd';
+            uploadArea.style.backgroundColor = '';
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.style.borderColor = '#ddd';
+            uploadArea.style.backgroundColor = '';
+            
+            if (e.dataTransfer.files.length) {
+                document.getElementById('project-cover').files = e.dataTransfer.files;
+                const event = new Event('change');
+                document.getElementById('project-cover').dispatchEvent(event);
+            }
+        });
+    </script>
+</body>
+</html>
