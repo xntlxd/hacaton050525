@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Сообщения | Nonefolio</title>
+    <link rel="stylesheet" type="text/css" href="./style.css">
+</head>
+<body>
+    <div class="dashboard">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="#" class="sidebar-logo">Nonefolio</a>
+                <div class="user-profile">
+                    <div class="user-avatar">АИ</div>
+                    <div class="user-info">
+                        <h4>Алексей Иванов</h4>
+                        <p>Участник</p>
+                    </div>
+                </div>
+            </div>
+            <nav class="sidebar-menu">
+                <p class="menu-title">Основное</p>
+                <a href="./my_projects.html" class="menu-item">
+                    <i>📋</i>
+                    <span>Мои проекты</span>
+                </a>
+                <a href="./messages.html" class="menu-item active">
+                    <i>💬</i>
+                    <span>Сообщения</span>
+                </a>
+                <p class="menu-title">Портфолио</p>
+                <a href="./my_works.html" class="menu-item">
+                    <i>🎨</i>
+                    <span>Мои работы</span>
+                </a>
+                <p class="menu-title">Настройки</p>
+                <a href="./profile.html" class="menu-item">
+                    <i>⚙️</i>
+                    <span>Профиль</span>
+                </a>
+                <a href="./create_project.html" class="menu-item active">
+                    <i>➕</i>
+                    <span>Новый проект</span>
+                </a>
+            </nav>
+        </aside>
+        
+        <main class="main-content" style="padding: 0;">
+            <div class="messages-container">
+                <div class="conversations-sidebar">
+                    <div class="conversations-header">
+                        <h2>Сообщения</h2>
+                        <button class="new-message-btn" title="Новое сообщение">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 5V19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="conversation-search">
+                        <input type="text" class="search-input" placeholder="Поиск сообщений">
+                    </div>
+                    <div class="conversation-list">
+                        <div class="conversation-item active" data-chat="1">
+                            <div class="conversation-avatar">МП</div>
+                            <div class="conversation-info">
+                                <div class="conversation-header">
+                                    <span class="conversation-name">Мария Петрова</span>
+                                    <span class="conversation-time">10:45</span>
+                                </div>
+                                <div class="conversation-preview">Привет! Как продвигается работа над проектом?</div>
+                            </div>
+                        </div>
+                        <div class="conversation-item" data-chat="2">
+                            <div class="conversation-avatar">ИС</div>
+                            <div class="conversation-info">
+                                <div class="conversation-header">
+                                    <span class="conversation-name">Иван Сидоров (куратор)</span>
+                                    <span class="conversation-time">Вчера</span>
+                                </div>
+                                <div class="conversation-preview">Я просмотрел ваш последний коммит, есть несколько замечаний...</div>
+                            </div>
+                        </div>
+                        <div class="conversation-item" data-chat="3">
+                            <div class="conversation-avatar">КТ</div>
+                            <div class="conversation-info">
+                                <div class="conversation-header">
+                                    <span class="conversation-name">Команда "Технопроект"</span>
+                                    <span class="conversation-time">Пн</span>
+                                </div>
+                                <div class="conversation-preview">Елена: Напоминаю, что завтра в 15:00 собрание по проекту</div>
+                            </div>
+                        </div>
+                        <div class="conversation-item" data-chat="4">
+                            <div class="conversation-avatar">АК</div>
+                            <div class="conversation-info">
+                                <div class="conversation-header">
+                                    <span class="conversation-name">Андрей Козлов</span>
+                                    <span class="conversation-time">12 июн</span>
+                                </div>
+                                <div class="conversation-preview">Спасибо за помощь с задачей!</div>
+                            </div>
+                        </div>
+                        <div class="conversation-item unread" data-chat="5">
+                            <div class="conversation-avatar">ЕС</div>
+                            <div class="conversation-info">
+                                <div class="conversation-header">
+                                    <span class="conversation-name">Елена Смирнова</span>
+                                    <span class="conversation-time">5 июн</span>
+                                </div>
+                                <div class="conversation-preview">Привет! Ты не забыл про наш совместный проект?</div>
+                            </div>
+                            <div class="unread-badge">3</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chat-container" id="chat-1">
+                    <div class="chat-header">
+                        <button class="back-to-conversations">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </button>
+                        <div class="chat-user">
+                            <div class="chat-user-avatar">МП</div>
+                            <div>
+                                <div class="chat-user-name">Мария Петрова</div>
+                                <div class="chat-user-status">была в сети 10 минут назад</div>
+                            </div>
+                        </div>
+                        <div class="chat-actions">
+                            <button class="chat-action-btn" title="Поиск">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M21 21L16.65 16.65" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </button>
+                            <button class="chat-action-btn" title="Дополнительно">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 13C12.5523 13 13 12.5523 13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12C11 12.5523 11.4477 13 12 13Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M12 6C12.5523 6 13 5.55228 13 5C13 4.44772 12.5523 4 12 4C11.4477 4 11 4.44772 11 5C11 5.55228 11.4477 6 12 6Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M12 20C12.5523 20 13 19.5523 13 19C13 18.4477 12.5523 18 12 18C11.4477 18 11 18.4477 11 19C11 19.5523 11.4477 20 12 20Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="chat-messages">
+                        <div class="message message-incoming">
+                            <div class="message-bubble">Привет! Как продвигается работа над проектом?</div>
+                            <div class="message-info">
+                                <span>Мария Петрова</span>
+                                <span class="message-time">10:45</span>
+                            </div>
+                        </div>
+                        <div class="message message-outgoing">
+                            <div class="message-bubble">Привет! Почти закончил основную часть, осталось немного доработать дизайн.</div>
+                            <div class="message-info">
+                                <span class="message-time">10:47</span>
+                                <span class="message-status">✓✓</span>
+                            </div>
+                        </div>
+                        <div class="message message-incoming">
+                            <div class="message-bubble">Отлично! Когда примерно сможешь показать результат? Куратор просил подготовить презентацию к пятнице.</div>
+                            <div class="message-info">
+                                <span>Мария Петрова</span>
+                                <span class="message-time">10:49</span>
+                            </div>
+                        </div>
+                        <div class="message message-outgoing">
+                            <div class="message-bubble">Думаю, завтра к вечеру уже все будет готово. Можешь сказать куратору, что к пятнице точно подготовим.</div>
+                            <div class="message-info">
+                                <span class="message-time">10:51</span>
+                                <span class="message-status">✓✓</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chat-input-container">
+                        <div class="chat-input-wrapper">
+                            <textarea class="chat-input" placeholder="Напишите сообщение..." rows="1"></textarea>
+                            <button class="chat-send-btn">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M22 2L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chat-container" id="chat-empty">
+                    <div class="empty-chat">
+                        <div class="empty-chat-icon">💬</div>
+                        <h3>Выберите чат</h3>
+                        <p>Выберите существующую беседу из списка или создайте новое сообщение, чтобы начать общение.</p>
+                        <button class="btn">Новое сообщение</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Переключение между чатами
+        document.querySelectorAll('.conversation-item').forEach(item => {
+            item.addEventListener('click', function() {
+                // Удаляем активный класс у всех элементов
+                document.querySelectorAll('.conversation-item').forEach(i => i.classList.remove('active'));
+                // Добавляем активный класс к выбранному элементу
+                this.classList.add('active');
+                
+                // Скрываем все чаты
+                document.querySelectorAll('.chat-container').forEach(chat => {
+                    chat.style.display = 'none';
+                });
+                
+                // Показываем выбранный чат
+                const chatId = this.getAttribute('data-chat');
+                document.getElementById(`chat-${chatId}`).style.display = 'flex';
+                
+                // На мобильных устройствах скрываем список чатов и показываем выбранный чат
+                if (window.innerWidth <= 768) {
+                    document.querySelector('.conversations-sidebar').style.display = 'none';
+                    document.getElementById(`chat-${chatId}`).classList.add('active');
+                }
+            });
+        });
+        
+        // Кнопка "Назад" для мобильных устройств
+        document.querySelectorAll('.back-to-conversations').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelector('.conversations-sidebar').style.display = 'block';
+                document.querySelectorAll('.chat-container').forEach(chat => {
+                    chat.style.display = 'none';
+                    chat.classList.remove('active');
+                });
+                document.getElementById('chat-empty').style.display = 'flex';
+            });
+        });
+        
+        // Кнопка нового сообщения
+        document.querySelector('.new-message-btn').addEventListener('click', function() {
+            alert('Функция "Новое сообщение" будет реализована в будущем обновлении');
+        });
+        
+        // Автоматическое увеличение высоты textarea при вводе текста
+        document.querySelector('.chat-input').addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+        });
+        
+        // По умолчанию показываем пустой чат
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.chat-container').forEach(chat => {
+                chat.style.display = 'none';
+            });
+            document.getElementById('chat-empty').style.display = 'flex';
+        });
+    </script>
+</body>
+</html>
