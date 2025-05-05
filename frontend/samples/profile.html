@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мой профиль | Nonefolio</title>
+    <link rel="stylesheet" type="text/css" href="./style.css">
+</head>
+<body>
+    <div class="dashboard">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="#" class="sidebar-logo">Nonefolio</a>
+                <div class="user-profile">
+                    <div class="user-avatar">АИ</div>
+                    <div class="user-info">
+                        <h4>Алексей Иванов</h4>
+                        <p>Участник</p>
+                    </div>
+                </div>
+            </div>
+            <nav class="sidebar-menu">
+                <p class="menu-title">Основное</p>
+                <a href="./my_projects.html" class="menu-item">
+                    <i>📋</i>
+                    <span>Мои проекты</span>
+                </a>
+                <a href="#" class="menu-item">
+                    <i>💬</i>
+                    <span>Сообщения</span>
+                </a>
+                
+                <p class="menu-title">Портфолио</p>
+                <a href="./my_works.html" class="menu-item">
+                    <i>🎨</i>
+                    <span>Мои работы</span>
+                </a>
+        
+                
+                <p class="menu-title">Настройки</p>
+                <a href="./profile.html" class="menu-item active">
+                    <i>⚙️</i>
+                    <span>Профиль</span>
+                </a>
+                <a href="./create_project.html" class="menu-item active">
+                    <i>➕</i>
+                    <span>Новый проект</span>
+                </a>
+            </nav>
+        </aside>
+        
+        <main class="main-content">
+            <div class="profile-container">
+                <div class="profile-header">
+                    <div class="profile-avatar">
+                        <span>АИ</span>
+                        <div class="avatar-upload">
+                            Изменить
+                            <input type="file" accept="image/*">
+                        </div>
+                    </div>
+                    <div class="profile-info">
+                        <h1 class="profile-name">Алексей Иванов</h1>
+                        <span class="profile-role">Участник</span>
+                        <p class="profile-bio">Студент 3 курса, направление "Веб-разработка". Увлекаюсь созданием современных пользовательских интерфейсов и изучением новых технологий.</p>
+                        
+                        <div class="profile-stats">
+                            <div class="stat-item">
+                                <div class="stat-value">24</div>
+                                <div class="stat-label">Проекта</div>
+                            </div>
+                        </div>
+                        
+                        <div class="profile-actions">
+                            <button class="btn">Редактировать профиль</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="profile-tabs">
+                    <div class="tab active" data-tab="about">Обо мне</div>
+                    <div class="tab" data-tab="projects">Проекты</div>
+                    <div class="tab" data-tab="activity">Активность</div>
+                    <div class="tab" data-tab="settings">Настройки</div>
+                </div>
+                
+                <div id="about" class="tab-content active">
+                    <div class="profile-section">
+                        <h2 class="section-title">
+                            Основная информация
+                            <button class="edit-btn">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M11 4H4C3.46957 4 2.96086 4.21071 2.58579 4.58579C2.21071 4.96086 2 5.46957 2 6V20C2 20.5304 2.21071 21.0391 2.58579 21.4142C2.96086 21.7893 3.46957 22 4 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M18.5 2.5C18.8978 2.10217 19.4374 1.87868 20 1.87868C20.5626 1.87868 21.1022 2.10217 21.5 2.5C21.8978 2.89782 22.1213 3.43739 22.1213 4C22.1213 4.56261 21.8978 5.10217 21.5 5.5L12 15L8 16L9 12L18.5 2.5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                Редактировать
+                            </button>
+                        </h2>
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label>Имя</label>
+                                    <p>Алексей</p>
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label>Фамилия</label>
+                                    <p>Иванов</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Email</label>
+                            <p>alexey.ivanov@example.com</p>
+                        </div>
+                        <div class="form-group">
+                            <label>О себе</label>
+                            <p>Я учусь на 3 курсе университета по направлению "Информационные технологии". Специализируюсь на веб-разработке, особенно интересует фронтенд с использованием современных фреймворков. В свободное время изучаю UI/UX дизайн и пробую создавать собственные проекты.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="profile-section">
+                        <h2 class="section-title">
+                            Навыки
+                            <button class="edit-btn">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M11 4H4C3.46957 4 2.96086 4.21071 2.58579 4.58579C2.21071 4.96086 2 5.46957 2 6V20C2 20.5304 2.21071 21.0391 2.58579 21.4142C2.96086 21.7893 3.46957 22 4 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M18.5 2.5C18.8978 2.10217 19.4374 1.87868 20 1.87868C20.5626 1.87868 21.1022 2.10217 21.5 2.5C21.8978 2.89782 22.1213 3.43739 22.1213 4C22.1213 4.56261 21.8978 5.10217 21.5 5.5L12 15L8 16L9 12L18.5 2.5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                Редактировать
+                            </button>
+                        </h2>
+                        <div class="skills-list">
+                            <div class="skill-tag">
+                                HTML/CSS
+                                <span class="remove-skill">&times;</span>
+                            </div>
+                            <div class="skill-tag">
+                                JavaScript
+                                <span class="remove-skill">&times;</span>
+                            </div>
+                            <div class="skill-tag">
+                                React
+                                <span class="remove-skill">&times;</span>
+                            </div>
+                            <div class="skill-tag">
+                                UI/UX Design
+                                <span class="remove-skill">&times;</span>
+                            </div>
+                            <div class="skill-tag">
+                                Figma
+                                <span class="remove-skill">&times;</span>
+                            </div>
+                        </div>
+                        <div class="add-skill">
+                            <input type="text" class="form-control" placeholder="Добавить навык">
+                            <button class="btn">Добавить</button>
+                        </div>
+                    </div>
+                    
+                    <!-- <div class="profile-section">
+                        <h2 class="section-title">
+                            Социальные сети
+                            <button class="edit-btn">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M11 4H4C3.46957 4 2.96086 4.21071 2.58579 4.58579C2.21071 4.96086 2 5.46957 2 6V20C2 20.5304 2.21071 21.0391 2.58579 21.4142C2.96086 21.7893 3.46957 22 4 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M18.5 2.5C18.8978 2.10217 19.4374 1.87868 20 1.87868C20.5626 1.87868 21.1022 2.10217 21.5 2.5C21.8978 2.89782 22.1213 3.43739 22.1213 4C22.1213 4.56261 21.8978 5.10217 21.5 5.5L12 15L8 16L9 12L18.5 2.5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                Редактировать
+                            </button>
+                        </h2>
+                        <div class="social-links">
+                            <div class="social-link">
+                                <div class="social-icon">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="#1877F2" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M22 12C22 6.477 17.523 2 12 2C6.477 2 2 6.477 2 12C2 16.991 5.657 21.128 10.438 21.878V14.891H7.898V12H10.438V9.797C10.438 7.291 11.93 5.907 14.215 5.907C15.309 5.907 16.453 6.102 16.453 6.102V8.562H15.193C13.95 8.562 13.563 9.333 13.563 10.124V12H16.336L15.893 14.891H13.563V21.878C18.343 21.128 22 16.991 22 12Z" fill="currentColor"/>
+                                    </svg>
+                                </div>
+                                <p>facebook.com/alexey.ivanov</p>
+                            </div>
+                            <div class="social-link">
+                                <div class="social-icon">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="#1DA1F2" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M22.162 5.656C21.398 5.993 20.589 6.215 19.761 6.315C20.634 5.791 21.288 4.969 21.6 3.999C20.78 4.488 19.881 4.83 18.944 5.015C18.142 4.183 17.016 3.672 15.769 3.672C13.38 3.672 11.443 5.61 11.443 8C11.443 8.33 11.477 8.651 11.542 8.961C7.91 8.789 4.718 7.111 2.542 4.396C2.151 5.082 1.927 5.873 1.927 6.707C1.927 8.297 2.717 9.715 3.919 10.469C3.196 10.449 2.512 10.249 1.912 9.921V9.971C1.912 12.207 3.43 14.043 5.493 14.443C5.142 14.539 4.774 14.593 4.398 14.593C4.13 14.593 3.87 14.566 3.617 14.518C4.152 16.317 5.848 17.649 7.848 17.681C6.272 18.918 4.334 19.639 2.254 19.639C1.914 19.639 1.58 19.621 1.25 19.585C3.275 20.917 5.676 21.672 8.254 21.672C15.769 21.672 19.961 14.666 19.961 8.477C19.961 8.291 19.956 8.105 19.949 7.921C20.754 7.341 21.449 6.628 22.162 5.656Z" fill="currentColor"/>
+                                    </svg>
+                                </div>
+                                <p>twitter.com/alexey_ivanov</p>
+                            </div>
+                            <div class="social-link">
+                                <div class="social-icon">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="#0077B5" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M20.447 20.452H16.893V14.883C16.893 13.555 16.866 11.846 15.041 11.846C13.188 11.846 12.905 13.291 12.905 14.785V20.452H9.351V8.997H12.765V10.561H12.813C13.288 9.661 14.448 8.711 16.181 8.711C19.782 8.711 20.448 11.081 20.448 14.166V20.452H20.447ZM5.337 7.433C4.193 7.433 3.274 6.507 3.274 5.368C3.274 4.23 4.194 3.305 5.337 3.305C6.477 3.305 7.401 4.23 7.401 5.368C7.401 6.507 6.476 7.433 5.337 7.433ZM7.119 20.452H3.555V8.997H7.119V20.452ZM22.225 0H1.771C0.792 0 0 0.774 0 1.729V22.271C0 23.227 0.792 24 1.771 24H22.222C23.2 24 24 23.227 24 22.271V1.729C24 0.774 23.2 0 22.222 0H22.225Z" fill="currentColor"/>
+                                    </svg>
+                                </div>
+                                <p>linkedin.com/in/alexey-ivanov</p>
+                            </div>
+                        </div>
+                    </div> -->
+                </div>
+                
+                <div id="projects" class="tab-content">
+                    <div class="profile-section">
+                        <h2 class="section-title">Мои проекты</h2>
+                        <p>Здесь будут отображаться все ваши проекты. В настоящее время у вас нет активных проектов.</p>
+                    </div>
+                </div>
+                
+                <div id="activity" class="tab-content">
+                    <div class="profile-section">
+                        <h2 class="section-title">Активность</h2>
+                        <p>Здесь будет отображаться ваша активность на платформе.</p>
+                    </div>
+                </div>
+                
+                <div id="settings" class="tab-content">
+                    <div class="profile-section">
+                        <h2 class="section-title">Настройки профиля</h2>
+                        <p>Здесь вы можете изменить настройки вашего профиля.</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Переключение между вкладками
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Удаляем активный класс у всех вкладок и контента
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                // Добавляем активный класс к выбранной вкладке и соответствующему контенту
+                tab.classList.add('active');
+                const tabId = tab.getAttribute('data-tab');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+        
+        // Обработка загрузки аватара
+        document.querySelector('.avatar-upload input').addEventListener('change', function(e) {
+            if (e.target.files.length > 0) {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                
+                reader.onload = function(event) {
+                    const avatar = document.querySelector('.profile-avatar');
+                    avatar.innerHTML = `<img src="${event.target.result}" alt="Аватар">`;
+                    avatar.innerHTML += `<div class="avatar-upload">Изменить<input type="file" accept="image/*"></div>`;
+                    
+                    // Повторно добавляем обработчик событий к новому input
+                    document.querySelector('.avatar-upload input').addEventListener('change', arguments.callee);
+                }
+                
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
+</body>
+</html>
