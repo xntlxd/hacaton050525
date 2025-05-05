@@ -14,7 +14,10 @@ class Users(NoneResource):
         return user_data
 
     def post(self):
-        raw_data = self.validate(["email", "password"])
+        try:
+            raw_data = self.validate(["email", "password"])
+        except BadRequest as e:
+            return ApiResponse.error(400, str(e), request.method)
 
         try:
             valid_data = uValidate(**raw_data).model_dump()
@@ -25,8 +28,8 @@ class Users(NoneResource):
 
         try:
             user_id = user_registration(valid_data["email"], valid_data["password"])
-        except Exception:
-            user_id = None
+        except Exception as e:
+            return ApiResponse.error(500, str(e), request.method)
 
         if user_id is not None:
             return ApiResponse.custom({
@@ -71,7 +74,7 @@ class Auth(NoneResource):
             }
         )
 
-        response = make_response(AuthResponse.success(access))
+        response = make_response(AuthResponse.success(user_data, access))
         response.set_cookie(
             "refresh_token", refresh, httponly=True, samesite="Strict", max_age=2592000, path="api/v1/refresh"
         )
@@ -101,7 +104,37 @@ class Refresh(NoneResource):
         return AuthResponse.success({
             "access_token": new_access_token
         })
+    
+class Projects(NoneResource):
+    def get(self):
+        pass
+
+    @jwt_required()
+    def post(self):
+        try:
+            raw_data = self.validate(["title", "description"])
+        except BadRequest as e:
+            return ApiResponse.error(400, str(e), request.method)
+
+        user_id = get_jwt_identity()
+
+        try:
+            valid_data = pValidate(**raw_data).model_dump()
+        except BadRequest as e:
+            return ApiResponse.error(400, str(e), request.method)
+        except Exception as e:
+            return ApiResponse.error(500, str(e), request.method)
+
+        new_project = project_create(valid_data["title"], valid_data["description"], user_id)
+
+        return ApiResponse.created(new_project, request.method)
+
+class Boards(NoneResource):
+    pass
+
+class Cards(NoneResource):
+    pass
 
 __all__ = [
-    "Users", "Auth", "Refresh"
+    "Users", "Auth", "Refresh", "Projects"
 ]

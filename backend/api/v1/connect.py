@@ -87,7 +87,37 @@ def user_getinfo(uid: int | None = None, email: int | None = None, guest: bool =
         user_dict = dict(zip(column_names, user_data))
         
         return user_dict
+    
+def project_create(title: str, description: str, author: int):
+    with dbinit() as connect:
+        cursor = connect.cursor()
+
+        cursor.execute(
+            "INSERT INTO projects (title, description) VALUES (%s, %s) RETURNING id",
+            (title, description)
+        )
+        project_id = cursor.fetchone()[0]
+        
+        cursor.execute(
+            "INSERT INTO collaborators (user_id, project_id, role) VALUES (%s, %s, %s)",
+            (author, project_id, 3)
+        )
+        connect.commit()
+
+        cursor.execute("SELECT * FROM projects WHERE id = %s", (project_id,))
+        project_data = cursor.fetchone()
+        column_names = [desc[0] for desc in cursor.description]
+        project_dict = dict(zip(column_names, project_data))
+
+        if "created_at" in project_dict and project_dict["created_at"]:
+            project_dict["created_at"] = project_dict["created_at"].isoformat()
+
+    return project_dict
+
+def project_info(id: int):
+    return 
 
 __all__ = [
-    "user_registration", "user_login", "user_getinfo", 
+    "user_registration", "user_login", "user_getinfo",
+    "project_create",
 ]
