@@ -2,12 +2,12 @@ const Footer_home = () => {
     return ( 
     <footer>
         <p>Nonefolio - платформа для образовательных проектов</p>
-        <div class="footer-links">
+        <div className="footer-links">
             <a href="#">Политика конфиденциальности</a>
             <a href="#">Условия использования</a>
             <a href="#">Контакты</a>
         </div>
-        <p class="copyright">© 2025 Nonefolio</p>
+        <p className="copyright">© 2025 Nonefolio</p>
     </footer> 
     );
 }

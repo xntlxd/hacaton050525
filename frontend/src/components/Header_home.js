@@ -1,13 +1,13 @@
 const Header_home = () => {
     return ( 
-    <nav class="navbar">
-        <a href="#" class="logo">Nonefolio</a>
-        <div class="nav-links">
+    <nav className="navbar">
+        <a href="#" className="logo">Nonefolio</a>
+        <div className="nav-links">
             <a href="#">О нас</a>
         </div>
-        <div class="auth-buttons">
-            <a href="/login" class="btn btn-login">Войти</a>
-            <a href="/registration" class="btn btn-register">Регистрация</a>
+        <div className="auth-buttons">
+            <a href="/login" className="btn btn-login">Войти</a>
+            <a href="/registration" className="btn btn-register">Регистрация</a>
         </div>
     </nav>
     );

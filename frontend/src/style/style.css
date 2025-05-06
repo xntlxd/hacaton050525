@@ -49,7 +49,7 @@ a {
 .logo {
     font-size: 1.8rem;
     font-weight: 700;
-    color: var(--primary);
+    color: var(--accent);
     text-decoration: none;
 }
 
@@ -319,18 +319,6 @@ footer {
 
 .btn:hover {
     background-color: var(--secondary);
-}
-
-.auth-footer {
-    text-align: center;
-    margin-top: 2rem;
-    color: #666;
-}
-
-.auth-footer a {
-    color: var(--primary);
-    text-decoration: none;
-    font-weight: 500;
 }
 
 .error-message {
@@ -940,6 +928,10 @@ textarea.form-control {
     display: none;
 }
 
+.member-avatar {
+    margin-right: 0.5rem;
+}
+
 @media (max-width: 768px) {
     .form-row {
         flex-direction: column;
@@ -1210,7 +1202,7 @@ textarea.form-control {
 }
 
 .profile-bio {
-    color: #666;
+    color: #a1a1a1;
     margin-bottom: 1.5rem;
 }
 
@@ -1231,7 +1223,7 @@ textarea.form-control {
 
 .stat-label {
     font-size: 0.9rem;
-    color: #666;
+    color: #a1a1a1;
 }
 
 .profile-actions {
@@ -1250,7 +1242,7 @@ textarea.form-control {
     padding: 1rem 1.5rem;
     cursor: pointer;
     position: relative;
-    color: #666;
+    color: #a1a1a1;
     font-weight: 500;
 }
 
