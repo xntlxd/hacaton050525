@@ -184,7 +184,7 @@ class Projects(NoneResource):
     def post(self):
         """Создание нового проекта."""
         try:
-            raw_data = self.validate(["title", "description"])
+            raw_data = self.validate(["title", "description"], ["tags", "start_date", "end_date"])
             user_id = get_jwt_identity()
             valid_data = pValidate(**raw_data).model_dump()
             new_project = project_create(valid_data["title"], valid_data["description"], user_id)

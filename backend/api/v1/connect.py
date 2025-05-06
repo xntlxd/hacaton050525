@@ -3,7 +3,7 @@ from contextlib import contextmanager
 from werkzeug.exceptions import NotFound, BadRequest, Forbidden, Conflict
 from werkzeug.security import check_password_hash
 from typing import Optional, List, Dict, Any
-from server import *
+from .server import *
 import logging
 
 # Настройка логирования

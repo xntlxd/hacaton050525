@@ -1,2 +1,2 @@
-PASSWORD = "sudo"
-PORT = "5432"
+PASSWORD = "root"
+PORT = "1111"

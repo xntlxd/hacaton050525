@@ -17,9 +17,11 @@ const Create_Project = () => {
   const [success, setSuccess] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
   const [previewUrl, setPreviewUrl] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const fileInputRef = useRef(null);
   const dropRef = useRef(null);
 
+  // Очистка превью при размонтировании
   useEffect(() => {
     return () => {
       if (previewUrl) {
@@ -27,6 +29,16 @@ const Create_Project = () => {
       }
     };
   }, [previewUrl]);
+
+  // Проверка валидности токена
+  const validateToken = () => {
+    const token = localStorage.getItem("accessToken");
+    if (!token || token.split('.').length !== 3) {
+      setError("Недействительный токен авторизации. Пожалуйста, войдите снова.");
+      return null;
+    }
+    return token;
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -43,13 +55,11 @@ const Create_Project = () => {
       return;
     }
 
-    const token = localStorage.getItem("accessToken");
-    if (!token || token.split('.').length !== 3) {
-      setError("Недействительный токен авторизации. Пожалуйста, войдите снова.");
-      return;
-    }
+    const token = validateToken();
+    if (!token) return;
 
     try {
+      setIsLoading(true);
       const response = await fetch(`http://localhost:5000/api/v1/users?email=${participantInput}`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -57,21 +67,23 @@ const Create_Project = () => {
       });
 
       const result = await response.json();
-      if (response.ok && result.data.body) {
-        const user = result.data.body;
-        if (participants.some(p => p.id === user.id)) {
-          setError("Этот участник уже добавлен");
-          return;
-        }
-
-        setParticipants([...participants, { id: user.id, email: user.email, role: 1 }]);
-        setParticipantInput("");
-        setError(null);
-      } else {
-        setError("Пользователь не найден");
+      
+      if (!response.ok) {
+        throw new Error(result.meta?.message || "Пользователь не найден");
       }
+
+      const user = result.data.body;
+      if (participants.some(p => p.id === user.id)) {
+        throw new Error("Этот участник уже добавлен");
+      }
+
+      setParticipants([...participants, { id: user.id, email: user.email, role: 1 }]);
+      setParticipantInput("");
+      setError(null);
     } catch (err) {
-      setError("Не удалось найти пользователя");
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -93,20 +105,17 @@ const Create_Project = () => {
     }
   }, [previewUrl]);
 
+  // Обработчики drag-and-drop
   const handleDragOver = useCallback((e) => {
     e.preventDefault();
     e.stopPropagation();
-    if (e.dataTransfer.types.includes('Files')) {
-      setIsDragging(true);
-    }
+    setIsDragging(e.dataTransfer.types.includes('Files'));
   }, []);
 
   const handleDragEnter = useCallback((e) => {
     e.preventDefault();
     e.stopPropagation();
-    if (e.dataTransfer.types.includes('Files')) {
-      setIsDragging(true);
-    }
+    setIsDragging(e.dataTransfer.types.includes('Files'));
   }, []);
 
   const handleDragLeave = useCallback((e) => {
@@ -128,8 +137,7 @@ const Create_Project = () => {
     }
   }, [handleFileChange]);
 
-  const triggerFileInput = useCallback((e) => {
-    e.stopPropagation();
+  const triggerFileInput = useCallback(() => {
     fileInputRef.current?.click();
   }, []);
 
@@ -140,8 +148,7 @@ const Create_Project = () => {
     }
   }, [handleFileChange]);
 
-  const removeFile = useCallback((e) => {
-    e.stopPropagation();
+  const removeFile = useCallback(() => {
     if (previewUrl) {
       URL.revokeObjectURL(previewUrl);
     }
@@ -156,53 +163,64 @@ const Create_Project = () => {
     e.preventDefault();
     setError(null);
     setSuccess(null);
-
+  
     if (!formData.projectName || !formData.projectDescription) {
       setError("Пожалуйста, заполните обязательные поля: название и описание");
       return;
     }
-
-    const token = localStorage.getItem("accessToken");
-    if (!token || token.split('.').length !== 3) {
-      setError("Недействительный токен авторизации. Пожалуйста, войдите снова.");
-      return;
-    }
-
-    // Log token for debugging
-    
-
-    // Only include fields the server accepts
-    const projectData = {
-      title: formData.projectName,
-      description: formData.projectDescription,
-    };
-
+  
+    const token = validateToken();
+    if (!token) return;
+  
     try {
-      // Log the payload for debugging
+      setIsLoading(true);
       
-
-      // Create project
+      // Подготовка данных в формате JSON
+      const projectData = {
+        title: formData.projectName,
+        description: formData.projectDescription,
+        tags: formData.projectTags || undefined,
+        start_date: formData.projectStart || undefined,
+        end_date: formData.projectEnd || undefined,
+        // Файл нужно обработать отдельно, так как JSON не поддерживает бинарные данные
+      };
+  
+      // 1. Сначала создаем проект с основными данными
       const projectResponse = await fetch("http://localhost:5000/api/v1/projects", {
         method: "POST",
-        headers: {
+        headers: { 
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${token}` 
         },
         body: JSON.stringify(projectData),
       });
-
+  
       const projectResult = await projectResponse.json();
       
-
       if (!projectResponse.ok) {
-        const errorMessage = projectResult.meta?.message || projectResult.message || JSON.stringify(projectResult);
-        setError(`Ошибка при создании проекта: ${errorMessage}`);
-        return;
+        throw new Error(projectResult.meta?.message || projectResult.message || "Ошибка при создании проекта");
       }
-
+  
       const projectId = projectResult.data.body.id;
-
-      // Add participants as collaborators
+  
+      // 2. Если есть обложка, загружаем ее отдельным запросом
+      if (formData.projectCover) {
+        const coverFormData = new FormData();
+        coverFormData.append('cover', formData.projectCover);
+        
+        const coverResponse = await fetch(`http://localhost:5000/api/v1/projects/${projectId}/cover`, {
+          method: "POST",
+          headers: { Authorization: `Bearer ${token}` },
+          body: coverFormData,
+        });
+  
+        if (!coverResponse.ok) {
+          const coverResult = await coverResponse.json();
+          throw new Error(coverResult.meta?.message || "Ошибка при загрузке обложки");
+        }
+      }
+  
+      // 3. Добавляем участников
       for (const participant of participants) {
         const collaboratorResponse = await fetch("http://localhost:5000/api/v1/projects/collaborators", {
           method: "POST",
@@ -216,15 +234,16 @@ const Create_Project = () => {
             role: participant.role,
           }),
         });
-
+  
         if (!collaboratorResponse.ok) {
           const collaboratorResult = await collaboratorResponse.json();
-          setError(`Ошибка при добавлении участника ${participant.email}: ${collaboratorResult.meta?.message || "Неизвестная ошибка"}`);
-          return;
+          throw new Error(`Ошибка при добавлении участника ${participant.email}: ${collaboratorResult.meta?.message || "Неизвестная ошибка"}`);
         }
       }
-
-      setSuccess("Проект и участники успешно добавлены!");
+  
+      // Успешное завершение
+      setSuccess("Проект успешно создан!");
+      // Сброс формы
       setFormData({
         projectName: "",
         projectDescription: "",
@@ -235,18 +254,19 @@ const Create_Project = () => {
       });
       setParticipants([]);
       setParticipantInput("");
-      if (previewUrl) {
-        URL.revokeObjectURL(previewUrl);
-        setPreviewUrl(null);
-      }
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
-      }
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+      setPreviewUrl(null);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+      
     } catch (err) {
-      console.error("Fetch error:", err);
-      setError(`Не удалось подключиться к серверу: ${err.message}`);
+      console.error("Ошибка при создании проекта:", err);
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
     }
   };
+
+  // ... (остальная часть JSX остается без изменений)
 
   return (
     <div className="dashboard">
@@ -262,6 +282,7 @@ const Create_Project = () => {
         <div className="project-form-container">
           {error && <div className="error-message">{error}</div>}
           {success && <div className="success-message">{success}</div>}
+          
           <form onSubmit={handleSubmit}>
             <div className="form-section">
               <h3>Основная информация</h3>
@@ -424,7 +445,13 @@ const Create_Project = () => {
             </div>
 
             <div className="form-actions">
-              <button type="submit" className="btn">Создать проект</button>
+              <button 
+                type="submit" 
+                className="btn"
+                disabled={isLoading}
+              >
+                {isLoading ? 'Создание...' : 'Создать проект'}
+              </button>
             </div>
           </form>
         </div>
