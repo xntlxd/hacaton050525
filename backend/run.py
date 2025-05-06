@@ -14,6 +14,7 @@ apiclient.add_resource(Refresh, "/api/v1/refresh")
 apiclient.add_resource(Projects, "/api/v1/projects")
 apiclient.add_resource(Collaborators, "/api/v1/projects/collaborators")
 apiclient.add_resource(Boards, "/api/v1/projects/boards")
+apiclient.add_resource(Cards, "/api/v1/projects/cards")
 
 app.secret_key = SECRET_KEY
 app.config["JWT_SECRET_KEY"] = JWT_KEY

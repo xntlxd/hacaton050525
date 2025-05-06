@@ -259,6 +259,27 @@ class bValidate(BaseModel):
         if len(title) == 0 or len(title) > 16:
             raise BadRequest("The title must not exceed 16 characters!")
         return title
+    
+class cValidate(BaseModel):
+    title: str
+    about: str
+    brief_about: str | None = None
+    sell_by: str | None = None
+    status: str = "todo"
+    priority: int = 0
+    external_resource: str | None = None
+
+    @field_validator("title")
+    def valid_title(cls, title):
+        if len(title) < 3 or len(title) > 16:
+            raise BadRequest("Title must be between 3 and 16 characters")
+        return title
+        
+    @field_validator("about")
+    def valid_about(cls, about):
+        if len(about) > 2048:
+            raise BadRequest("About text too long (max 2048 chars)")
+        return about
 
 __all__ = [
     "NoneResource", 
@@ -266,4 +287,5 @@ __all__ = [
     "uValidate",
     "pValidate",
     "bValidate",
+    "cValidate"
 ]

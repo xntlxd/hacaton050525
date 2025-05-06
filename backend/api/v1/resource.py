@@ -157,13 +157,29 @@ class Projects(NoneResource):
         author = request.args.get("author", type=int)
 
         try:
+            if project_id is None and title is None and author is None:
+                try:
+                    verify_jwt_in_request()
+                    current_user_id = get_jwt_identity()
+                    projects = project_info(author=current_user_id)
+                    
+                    response_data = {
+                        "owner_projects": projects.get("owner_projects", []),
+                        "member_projects": projects.get("member_projects", [])
+                    }
+                    return ApiResponse.success(response_data, request.method)
+                except Exception as e:
+                    return ApiResponse.error(401, "Authorization required", request.method)
+            
             project = project_info(project_id, title, author)
+            return ApiResponse.success(project, request.method)
+            
         except BadRequest as e:
             return ApiResponse.error(400, str(e), request.method)
         except NotFound as e:
             return ApiResponse.error(404, str(e), request.method)
-        
-        return ApiResponse.success(project, request.method)
+        except Exception as e:
+            return ApiResponse.error(500, str(e), request.method)
 
     @jwt_required()
     def post(self):
@@ -313,9 +329,56 @@ class Boards(NoneResource):
         return ApiResponse.created(board_data)
 
 class Cards(NoneResource):
-    pass
+    @jwt_required()
+    def get(self):
+        data = request.args
+        board_id = data.get("board_id", type=int)
+        card_id = data.get("card_id", type=int)
+        user_id = get_jwt_identity()
+
+        try:
+            if not can_edit(user_id, board_id=board_id, card_id=card_id):
+                raise Forbidden("Insufficient permissions")
+
+            cards_data = cards_info(board_id, card_id)
+        except BadRequest as e:
+            return ApiResponse.error(400, str(e), request.method)
+        except NotFound as e:
+            return ApiResponse.error(404, str(e), request.method)
+        except Forbidden as e:
+            return ApiResponse.error(403, str(e), request.method)
+        
+        return ApiResponse.success(cards_data, request.method)
+
+    @jwt_required()
+    def post(self):
+        try:
+            raw_data = self.validate(["board_id", "title", "about"])
+            user_id = get_jwt_identity()
+            
+            if not can_edit(user_id, board_id=raw_data["board_id"]):
+                raise Forbidden("Insufficient permissions")
+                
+            new_card = cards_create(
+                board_id=raw_data["board_id"],
+                title=raw_data["title"],
+                about=raw_data["about"],
+                brief_about=raw_data.get("brief_about"),
+                sell_by=raw_data.get("sell_by"),
+                status=raw_data.get("status", "todo"),
+                priority=raw_data.get("priority", 0),
+                external_resource=raw_data.get("external_resource")
+            )
+            return ApiResponse.created(new_card, request.method)
+            
+        except BadRequest as e:
+            return ApiResponse.error(400, str(e), request.method)
+        except Forbidden as e:
+            return ApiResponse.error(403, str(e), request.method)
+        except Exception as e:
+            return ApiResponse.error(500, str(e), request.method)
 
 __all__ = [
     "Users", "Auth", "Refresh", "Projects",
-    "Collaborators", "Boards"
+    "Collaborators", "Boards", "Cards"
 ]
