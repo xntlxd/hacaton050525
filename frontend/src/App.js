@@ -8,6 +8,7 @@ import My_Works from "./pages/My_Works";
 import Create_Project from "./pages/Create_Project";
 import "../src/style/style.css";
 import ProtectedRoute from './services/ProtectedRoute';
+import Notifications from './pages/Notifications';
 
 function App() {
   return (
@@ -26,14 +27,14 @@ function App() {
           <My_Projects />
           </ProtectedRoute>
           } />
-        <Route path="/my_works" element={
-          <ProtectedRoute>
-          <My_Works />
-          </ProtectedRoute>
-          } />
         <Route path="/create_project" element={
           <ProtectedRoute>
           <Create_Project />
+          </ProtectedRoute>
+          } />
+        <Route path="/notifications" element={
+          <ProtectedRoute>
+          <Notifications />
           </ProtectedRoute>
           } />
       </Routes>

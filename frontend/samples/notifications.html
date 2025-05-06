@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Уведомления | Nonefolio</title>
+    <link rel="stylesheet" type="text/css" href="./style.css">
+</head>
+<body>
+    <div class="dashboard">
+        
+        <main class="main-content">
+            <div class="notifications-container">
+                <div class="notifications-header">
+                    <div class="notifications-title">
+                        <h1>Уведомления</h1>
+                    </div>
+                    <div class="notifications-actions">
+                        <button class="mark-all-read">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M18 8L22 12L18 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M6 8L2 12L6 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M2 12H22" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            Прочитать все
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="notification-tabs">
+                    <div class="notification-tab active">Все</div>
+                    <div class="notification-tab">Непрочитанные <span class="notification-tab-badge">3</span></div>
+
+                </div>
+                
+                <div class="notification-list">
+                    <div class="notification-item unread">
+                        <div class="notification-avatar">МП</div>
+                        <div class="notification-content">
+                            <div class="notification-message">
+                                <strong>Мария Петрова</strong> упомянул(а) вас в комментарии к проекту <strong>"Разработка мобильного приложения"</strong>: "Алексей, когда сможешь закончить свою часть работы?"
+                            </div>
+                            <div class="notification-meta">
+                                <span>Комментарий</span>
+                                <span class="notification-time">10 минут назад</span>
+                            </div>
+                            <div class="notification-actions">
+                                <button class="notification-btn notification-btn-primary">Ответить</button>
+                                <button class="notification-btn notification-btn-outline">Перейти к проекту</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="notification-item unread">
+                        <div class="notification-avatar">ИС</div>
+                        <div class="notification-content">
+                            <div class="notification-message">
+                                <strong>Иван Сидоров</strong> назначил вас ответственным за задачу <strong>"Разработать API для модуля авторизации"</strong> в проекте <strong>"Образовательная платформа"</strong>.
+                            </div>
+                            <div class="notification-meta">
+                                <span>Задача</span>
+                                <span class="notification-time">1 час назад</span>
+                            </div>
+                            <div class="notification-actions">
+                                <button class="notification-btn notification-btn-primary">Принять</button>
+                                <button class="notification-btn notification-btn-outline">Посмотреть задачу</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="notification-item unread">
+                        <div class="notification-avatar">ЕС</div>
+                        <div class="notification-content">
+                            <div class="notification-message">
+                                <strong>Елена Смирнова</strong> отправила вам запрос на вступление в команду <strong>"Технопроект"</strong>.
+                            </div>
+                            <div class="notification-meta">
+                                <span>Команда</span>
+                                <span class="notification-time">3 часа назад</span>
+                            </div>
+                            <div class="notification-actions">
+                                <button class="notification-btn notification-btn-primary">Принять</button>
+                                <button class="notification-btn notification-btn-outline">Отклонить</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="notification-item">
+                        <div class="notification-avatar">👥</div>
+                        <div class="notification-content">
+                            <div class="notification-message">
+                                <strong>Андрей Козлов</strong> принял ваш запрос на вступление в команду <strong>"Веб-разработчики"</strong>.
+                            </div>
+                            <div class="notification-meta">
+                                <span>Команда</span>
+                                <span class="notification-time">1 неделю назад</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Переключение между вкладками
+        document.querySelectorAll('.notification-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.notification-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                // Здесь можно добавить логику фильтрации уведомлений
+                console.log('Выбрана вкладка:', tab.textContent.trim());
+            });
+        });
+        
+        // Пометить все как прочитанные
+        document.querySelector('.mark-all-read').addEventListener('click', () => {
+            document.querySelectorAll('.notification-item.unread').forEach(item => {
+                item.classList.remove('unread');
+            });
+            
+            // Обновить счетчик непрочитанных
+            document.querySelector('.notification-tab-badge').textContent = '0';
+            
+            alert('Все уведомления помечены как прочитанные');
+        });
+        
+        // Обработка кликов по уведомлениям
+        document.querySelectorAll('.notification-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                // Если клик был по кнопке, не обрабатываем
+                if (e.target.tagName === 'BUTTON') return;
+                
+                // Пометить как прочитанное
+                this.classList.remove('unread');
+                
+                // Здесь можно добавить логику перехода к соответствующему содержимому
+                console.log('Открыто уведомление:', this.querySelector('.notification-message').textContent.trim());
+            });
+        });
+    </script>
+</body>
+</html>

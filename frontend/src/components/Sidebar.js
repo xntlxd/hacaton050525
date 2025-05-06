@@ -36,7 +36,7 @@ const Sidebar = () => {
   return (
     <aside className="sidebar">
       <div className="sidebar-header">
-        <a href="#" className="sidebar-logo">Nonefolio</a>
+        <a href="/dashboard" className="sidebar-logo">Nonefolio</a>
         <div className="user-profile">
           <div className="user-avatar">{avatarLetter}</div>
           <div className="user-info">
@@ -47,27 +47,23 @@ const Sidebar = () => {
       </div>
       <nav className="sidebar-menu">
         <p className="menu-title">Основное</p>
+        <a href="/create_project" className="menu-item">
+          <i>➕</i>
+          <span>Новый проект</span>
+        </a>
+        <a href="/notifications" className="menu-item">
+          <i>💬</i>
+          <span>Уведомления</span>
+        </a>
+        <p className="menu-title">Портфолио</p>
         <a href="/dashboard" className="menu-item">
           <i>📋</i>
           <span>Мои проекты</span>
-        </a>
-        <a href="/messages" className="menu-item">
-          <i>💬</i>
-          <span>Сообщения</span>
-        </a>
-        <p className="menu-title">Портфолио</p>
-        <a href="/my_works" className="menu-item">
-          <i>🎨</i>
-          <span>Мои работы</span>
         </a>
         <p className="menu-title">Настройки</p>
         <a href="/profile" className="menu-item">
           <i>⚙️</i>
           <span>Профиль</span>
-        </a>
-        <a href="/create_project" className="menu-item">
-          <i>➕</i>
-          <span>Новый проект</span>
         </a>
       </nav>
     </aside>

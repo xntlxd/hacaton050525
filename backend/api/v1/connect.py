@@ -17,8 +17,7 @@ def dbinit():
         connect = psycopg2.connect(
             host="localhost",
             user="postgres",
-            port="1111",
-            password="root",
+            password="sudo",
             database="nonefolio"
         )
         yield connect

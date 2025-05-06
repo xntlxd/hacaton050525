@@ -1,7 +1,7 @@
 const Header_home = () => {
     return ( 
     <nav className="navbar">
-        <a href="#" className="logo">Nonefolio</a>
+        <a href="/" className="logo">Nonefolio</a>
         <div className="nav-links">
             <a href="#">О нас</a>
         </div>

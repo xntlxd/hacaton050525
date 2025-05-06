@@ -103,17 +103,17 @@ class Auth(NoneResource):
         try:
             raw_data = self.validate(["email", "password"])
             user_data = user_login(raw_data["email"], raw_data["password"])
-            access_token = create_access_token(
+            access = create_access_token(
                 identity=str(user_data["id"]),
                 additional_claims={"email": user_data["email"], "role": user_data["role"], "created_at": user_data["created_at"]}
             )
-            refresh_token = create_refresh_token(
+            refresh = create_refresh_token(
                 identity=str(user_data["id"]),
                 additional_claims={"email": user_data["email"], "version": user_data["version"]}
             )
-            response = make_response(AuthResponse.login(user_data, access_token, refresh_token, request.method))
+            response = make_response(AuthResponse.success(user_data, access))
             response.set_cookie(
-                "refresh_token", refresh_token, httponly=True, samesite="Strict", max_age=2592000, path="/api/v1/refresh"
+                "refresh_token", refresh, httponly=True, samesite="Strict", max_age=2592000, path="api/v1/refresh"
             )
             return response
         except NotFound as e:
