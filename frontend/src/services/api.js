@@ -105,3 +105,89 @@ export const createProject = async (token, title, description) => {
     throw error;
   }
 };
+
+export const getProjects = async (token) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/projects`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.meta.message || 'Failed to fetch projects');
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Get projects error:', error);
+    throw error;
+  }
+};
+
+export const getProjectDetails = async (token, projectId) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/projects?project_id=${projectId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.meta.message || 'Failed to fetch project details');
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Get project details error:', error);
+    throw error;
+  }
+};
+
+export const getBoards = async (token, projectId) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/projects/boards?project_id=${projectId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.meta.message || 'Failed to fetch boards');
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Get boards error:', error);
+    throw error;
+  }
+};
+
+export const createBoard = async (token, projectId, title) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/projects/boards`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ project_id: projectId, title }),
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.meta.message || 'Failed to create board');
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Create board error:', error);
+    throw error;
+  }
+};

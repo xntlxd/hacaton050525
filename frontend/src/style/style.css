@@ -399,6 +399,11 @@ footer {
     color: #666;
 }
 
+.desc{
+    color: white;
+    margin-bottom: 17px;
+}
+
 .sidebar-menu {
     padding: 0 1.5rem;
 }
