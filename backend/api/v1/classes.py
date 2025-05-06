@@ -248,11 +248,22 @@ class pValidate(BaseModel):
     def valid_description(cls, description):
         if len(description) > 1024:
             raise BadRequest("The description length must not be exceed 1024!")
-        return description        
+        return description
+    
+class bValidate(BaseModel):
+    title: str
+    project_id: int
+
+    @field_validator("title")
+    def valid_title(cls, title):
+        if len(title) == 0 or len(title) > 16:
+            raise BadRequest("The title must not exceed 16 characters!")
+        return title
 
 __all__ = [
     "NoneResource", 
     "ApiResponse", "AuthResponse",
     "uValidate",
     "pValidate",
+    "bValidate",
 ]

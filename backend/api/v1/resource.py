@@ -195,7 +195,7 @@ class Collaborators(NoneResource):
             if not collaborators_exist(raw_data["project_id"], user_id):
                 return ApiResponse.error(403, "You are not a member of the project!", request.method)
 
-            role = collaborators_getrole(raw_data["project_id"], user_id)
+            role = collaborators_getrole(raw_data["project_id"], user_id, False)
         except BadRequest as e:
             return ApiResponse.error(400, str(e), request.method)
 
@@ -270,12 +270,52 @@ class Collaborators(NoneResource):
         return ApiResponse.custom(None, 204)
 
 class Boards(NoneResource):
-    pass
+    
+    @jwt_required()
+    def get(self):
+        data = request.args
+        project_id = data.get("project_id", type=int)
+        board_id = data.get("board_id", type=int)
+        user_id = get_jwt_identity()
+
+        try:
+            user_edit = collaborators_getrole(project_id, user_id, False)
+
+            if user_edit == 0:
+                return ApiResponse.error(403, "You are not a member of the project!", request.method)
+            
+            boards_data = boards_info(project_id, board_id)
+        except BadRequest as e:
+            return ApiResponse.error(400, str(e), request.method)
+        except NotFound as e:
+            return ApiResponse.error(404, str(e), request.method)
+        
+        return ApiResponse.success(boards_data, request.method)
+
+    @jwt_required()
+    def post(self):
+        try:
+            raw_data = self.validate(["title", "project_id"])
+            user_id = get_jwt_identity()
+        except BadRequest as e:
+            return ApiResponse.error(400, str(e), request.method)
+        
+        try:
+            valid_data = bValidate(**raw_data).model_dump()
+            user_edit = collaborators_getrole(raw_data["project_id"], user_id, False)
+
+            if user_edit < 2:
+                return ApiResponse.error(403, "You are not an administrator of this project!", request.method)
+        except BadRequest as e:
+            return ApiResponse.error(400, str(e), request.method)
+        
+        board_data = boards_create(raw_data["project_id"], raw_data["title"])
+        return ApiResponse.created(board_data)
 
 class Cards(NoneResource):
     pass
 
 __all__ = [
     "Users", "Auth", "Refresh", "Projects",
-    "Collaborators"
+    "Collaborators", "Boards"
 ]

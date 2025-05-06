@@ -148,6 +148,8 @@ def user_role(uid: int):
         return role[0]
 
 def project_create(title: str, description: str, author: int):
+    DEFAULT = ["Идея", "Проработка", "Реализация", "Готово"]
+
     with dbinit() as connect:
         cursor = connect.cursor()
 
@@ -163,7 +165,21 @@ def project_create(title: str, description: str, author: int):
         )
         connect.commit()
 
-        cursor.execute("SELECT * FROM projects WHERE id = %s", (project_id,))
+        for name in DEFAULT:
+            cursor.execute(
+                "INSERT INTO boards (title, project_id) VALUES (%s, %s)",
+                (name, project_id)
+            )
+        connect.commit()
+
+        cursor.execute("SELECT * FROM boards WHERE project_id = %s", (project_id, ))
+        boards_data = cursor.fetchall()
+        column_names = [desc[0] for desc in cursor.description]
+        boards_array = []
+        for row in boards_data:
+            boards_array.append(dict(zip(column_names, row)))
+
+        cursor.execute("SELECT * FROM projects WHERE id = %s", (project_id, ))
         project_data = cursor.fetchone()
         column_names = [desc[0] for desc in cursor.description]
         project_dict = dict(zip(column_names, project_data))
@@ -173,6 +189,8 @@ def project_create(title: str, description: str, author: int):
 
         if "updated_at" in project_dict and project_dict["updated_at"]:
             project_dict["updated_at"] = project_dict["updated_at"].isoformat()
+
+        project_dict["boards"] = boards_array
 
     return project_dict
 
@@ -302,15 +320,17 @@ def collaborators_exist(project_id: int, user_id: int):
             return False
         return True
 
-def collaborators_getrole(project_id: int, user_id: int):
+def collaborators_getrole(project_id: int, user_id: int, error: bool = True):
     with dbinit() as connect:
         cursor = connect.cursor()
 
         cursor.execute("SELECT role FROM collaborators WHERE project_id = %s AND user_id = %s", (project_id, user_id))
         role = cursor.fetchone()
 
-        if role is None:
+        if role is None and error:
             raise NotFound(f"User: {user_id} - not found!")
+        elif role is None:
+            return 0
         
         return role[0]
     
@@ -331,10 +351,52 @@ def collaborators_change(project_id: int, user_id: int, role: int):
             changed_dict["added_at"] = changed_dict["added_at"].isoformat()
 
         return changed_dict
+    
+def boards_create(project_id: int, name: str):
+    with dbinit() as connect:
+        cursor = connect.cursor()
 
+        cursor.execute("INSERT INTO boards (title, project_id) VALUES (%s, %s)", (name, project_id))
+        board_id = cursor.fetchone()[0]
+        connect.commit()
+        cursor.execute("SELECT * FROM boards WHERE board_id = %s", board_id)
+        board = cursor.fetchone()
+        if board is None:
+            raise NotFound("Board not found!")
+        column_names = [row[0] for row in cursor.description]
+        return dict(zip(column_names, board))
+    
+def boards_info(project_id: int, board_id: int | None = None):
+    with dbinit() as conn:
+        cursor = conn.cursor()
+        where = ""
+        params = [project_id]
+        
+        if board_id is not None:
+            where = " AND id = %s"
+            params.append(board_id)
 
+        query = f"SELECT * FROM boards WHERE project_id = %s{where}"
+        cursor.execute(query, params)
+        board_data = cursor.fetchall()
+        
+        if not board_data:
+            raise NotFound("Board not found!")
+        
+        column_names = [desc[0] for desc in cursor.description]
+        
+        result = []
+        for row in board_data:
+            result.append(dict(zip(column_names, row)))
+        
+        if board_id is not None:
+            return result[0]
+        
+        return result
+            
 __all__ = [
     "user_registration", "user_login", "user_getinfo", "user_edit", "user_role",
     "project_create", "project_info",
-    "collaborators_add", "collaborators_getrole", "collaborators_delete", "collaborators_change", "collaborators_exist"
+    "collaborators_add", "collaborators_getrole", "collaborators_delete", "collaborators_change", "collaborators_exist",
+    "boards_create", "boards_info"
 ]
