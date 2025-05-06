@@ -1,6 +1,6 @@
 from flask_restful import Resource
 from flask import request
-from werkzeug.exceptions import BadRequest
+from werkzeug.exceptions import BadRequest, Forbidden
 from werkzeug.security import generate_password_hash
 from pydantic import BaseModel, EmailStr, field_validator
 
@@ -248,10 +248,11 @@ class pValidate(BaseModel):
     def valid_description(cls, description):
         if len(description) > 1024:
             raise BadRequest("The description length must not be exceed 1024!")
-        return description
+        return description        
 
 __all__ = [
     "NoneResource", 
     "ApiResponse", "AuthResponse",
-    "uValidate", "pValidate"
+    "uValidate",
+    "pValidate",
 ]

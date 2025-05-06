@@ -1,7 +1,9 @@
 import psycopg2
+from psycopg2 import sql
 from contextlib import contextmanager
 from werkzeug.exceptions import NotFound, BadRequest, Forbidden, Conflict
 from werkzeug.security import check_password_hash
+from typing import Optional
 
 @contextmanager
 def dbinit():
@@ -12,7 +14,7 @@ def dbinit():
             port="1111",
             user="postgres",
             password="root",
-            database="nonetrello"
+            database="nonefolio"
         )
         yield connect
     except psycopg2.Error as e:
@@ -47,8 +49,8 @@ def user_login(email: str, password: str) -> dict:
         if not check_password_hash(user_dict["password"], password):
             raise Forbidden("Incorrect login or password!")
 
-        if "create_time" in user_dict and user_dict["create_time"]:
-            user_dict["create_time"] = user_dict["create_time"].isoformat()
+        if "created_at" in user_dict and user_dict["created_at"]:
+            user_dict["created_at"] = user_dict["created_at"].isoformat()
 
         if "password" in user_dict:
             del user_dict["password"]
@@ -71,9 +73,9 @@ def user_getinfo(uid: int | None = None, email: int | None = None, guest: bool =
         cursor = connect.cursor()
 
         if guest:
-            sql = "SELECT id, email, role, created_time WHERE %s = %s"
+            sql = "SELECT id, email, role, created_at WHERE %s = %s"
         else:
-            sql = "SELECT id, email, role, created_time, version WHERE %s = %s"
+            sql = "SELECT id, email, role, created_at, version WHERE %s = %s"
 
         cursor.execute(
             sql, (option, parameter)
@@ -85,9 +87,66 @@ def user_getinfo(uid: int | None = None, email: int | None = None, guest: bool =
         
         column_names = [desc[0] for desc in cursor.description]
         user_dict = dict(zip(column_names, user_data))
+
+        if "created_at" in user_dict and user_dict["created_at"]:
+            user_dict["created_at"] = user_dict["created_at"].isoformat()
         
         return user_dict
+
+def user_edit(
+    uid: int,
+    password: Optional[str] = None,
+    role: Optional[int] = None,
+    nickname: Optional[str] = None,
+) -> bool:
+    updates = []
+    params = []
     
+    if password is not None:
+        updates.append("password = %s")
+        params.append(password)
+    if role is not None:
+        updates.append("role = %s")
+        params.append(role)
+    if nickname is not None:
+        updates.append("nickname = %s")
+        params.append(nickname)
+    
+    if not updates:
+        raise BadRequest("No arguments were passed")
+    
+    updates.append("version = version + 1")
+    
+    query = f"UPDATE users SET {', '.join(updates)} WHERE id = %s"
+    params.append(uid)
+    
+    with dbinit() as connect:
+        cursor = connect.cursor()
+        cursor.execute(query, params)
+        connect.commit()
+        cursor.execute("SELECT id, email, role, nickname, created_at, version FROM users WHERE id = %s", uid)
+        user_data = cursor.fetchone()
+        if user_data is None:
+            raise NotFound("User not found!")
+
+        column_names = [desc[0] for desc in cursor.description]
+        user_dict = dict(zip(column_names, user_data))
+
+        if "created_at" in user_dict and user_dict["created_at"]:
+            user_dict["created_at"] = user_dict["created_at"].isoformat()
+
+        return user_dict
+    
+def user_role(uid: int):
+    with dbinit() as connect:
+        cursor = connect.cursor()
+
+        cursor.execute("SELECT role FROM users WHERE id = %s", uid)
+        role = cursor.fetchone()
+        if role is None:
+            return 0
+        return role[0]
+
 def project_create(title: str, description: str, author: int):
     with dbinit() as connect:
         cursor = connect.cursor()
@@ -111,6 +170,9 @@ def project_create(title: str, description: str, author: int):
 
         if "created_at" in project_dict and project_dict["created_at"]:
             project_dict["created_at"] = project_dict["created_at"].isoformat()
+
+        if "updated_at" in project_dict and project_dict["updated_at"]:
+            project_dict["updated_at"] = project_dict["updated_at"].isoformat()
 
     return project_dict
 
@@ -156,7 +218,7 @@ def project_info(project_id: int | None = None, title: str | None = None, author
         SELECT 
             collaborators.user_id,
             collaborators.role,
-            collaborators.created_at as joined_at
+            collaborators.added_at
         FROM collaborators
         WHERE collaborators.project_id = %s
         """
@@ -177,8 +239,8 @@ def project_info(project_id: int | None = None, title: str | None = None, author
         users_list = [dict(zip(column_names, user)) for user in users_data]
         
         for user in users_list:
-            if "joined_at" in user and user["joined_at"]:
-                user["joined_at"] = user["joined_at"].isoformat()
+            if "added_at" in user and user["added_at"]:
+                user["added_at"] = user["added_at"].isoformat()
         
         project_dict['users'] = users_list
 
@@ -217,11 +279,8 @@ def collaborators_add(project_id: int, user_id: int, role: int):
         collaborator_dict = dict(zip(column_names, new_collaborator))
         connect.commit()
 
-        if "created_at" in collaborator_dict and collaborator_dict["created_at"]:
-            collaborator_dict["created_at"] = collaborator_dict["created_at"].isoformat()
-        
-        if "updated_at" in collaborator_dict:
-            collaborator_dict["updated_at"] = collaborator_dict["updated_at"].isoformat() if collaborator_dict["updated_at"] else None
+        if "added_at" in collaborator_dict and collaborator_dict["added_at"]:
+            collaborator_dict["added_at"] = collaborator_dict["added_at"].isoformat()
         
         return collaborator_dict
 
@@ -238,7 +297,6 @@ def collaborators_exist(project_id: int, user_id: int):
 
         cursor.execute("SELECT id FROM collaborators WHERE project_id = %s AND user_id = %s", (project_id, user_id))
         role = cursor.fetchone()
-        print(role)
         
         if role is None:
             return False
@@ -269,17 +327,14 @@ def collaborators_change(project_id: int, user_id: int, role: int):
 
         changed_dict = dict(zip(column_names, changed))
 
-        if "created_at" in changed_dict and changed_dict["created_at"]:
-            changed_dict["created_at"] = changed_dict["created_at"].isoformat()
-        
-        if "updated_at" in changed_dict:
-            changed_dict["updated_at"] = changed_dict["updated_at"].isoformat() if changed_dict["updated_at"] else None
+        if "added_at" in changed_dict and changed_dict["added_at"]:
+            changed_dict["added_at"] = changed_dict["added_at"].isoformat()
 
         return changed_dict
 
 
 __all__ = [
-    "user_registration", "user_login", "user_getinfo",
+    "user_registration", "user_login", "user_getinfo", "user_edit", "user_role",
     "project_create", "project_info",
     "collaborators_add", "collaborators_getrole", "collaborators_delete", "collaborators_change", "collaborators_exist"
 ]

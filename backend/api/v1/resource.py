@@ -2,9 +2,10 @@ from .classes import *
 from .connect import *
 from flask import request, make_response
 from werkzeug.exceptions import BadRequest, NotFound, Forbidden
+from werkzeug.security import generate_password_hash
 from flask_jwt_extended import (
     create_access_token, create_refresh_token, jwt_required,
-    get_jwt, get_jwt_identity
+    get_jwt, get_jwt_identity, verify_jwt_in_request
 )
 from psycopg2.errors import ForeignKeyViolation
 
@@ -41,8 +42,51 @@ class Users(NoneResource):
 
         return ApiResponse.error(500, ApiResponse.ERROR[500], request.method)
 
+    @jwt_required()
     def patch(self):
-        pass
+        data = request.get_json()
+        if not data:
+            return ApiResponse.error(400, "No data provided for update", request.method)
+
+        request_id = get_jwt_identity()
+        editing = request_id
+        updates = {}
+
+        if "password" in data:
+            updates["password"] = generate_password_hash(data["password"])
+
+        if "nickname" in data:
+            nickname = data["nickname"]
+            if len(nickname) == 0 or len(nickname) > 64:
+                return ApiResponse.error(400, "The nickname must not be more than 64 characters", request.method)
+            updates["nickname"] = nickname
+        
+        if "role" in data:
+            if "another_id" in data:
+                request_role = user_role(request_id)
+                another_role = user_role(data["another_id"])
+                if request_role > another_role:
+                    editing = data["another_id"]
+                    updates["role"] = data["role"]
+        
+
+        if not updates:
+            return ApiResponse.error(400, "No valid fields provided for update", request.method)
+
+        try:
+            updated_user = user_edit(
+                uid=editing,
+                **updates
+            )
+            return ApiResponse.success(updated_user, request.method)
+
+        except BadRequest as e:
+            return ApiResponse.error(400, str(e), request.method)
+        except Forbidden as e:
+            return ApiResponse.error(403, str(e), request.method)
+        except Exception as e:
+            return ApiResponse.error(500, str(e), request.method)
+
 
     def delete(self):
         pass
@@ -63,7 +107,7 @@ class Auth(NoneResource):
             additional_claims = {
                 "email": user_data["email"],
                 "role": user_data["role"],
-                "create_time": user_data["create_time"]
+                "created_at": user_data["created_at"]
             }
         )
 
