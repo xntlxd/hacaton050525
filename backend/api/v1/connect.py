@@ -3,6 +3,7 @@ from contextlib import contextmanager
 from werkzeug.exceptions import NotFound, BadRequest, Forbidden, Conflict
 from werkzeug.security import check_password_hash
 from typing import Optional, List, Dict, Any
+from server import *
 import logging
 
 # Настройка логирования
@@ -17,8 +18,8 @@ def dbinit():
         connect = psycopg2.connect(
             host="localhost",
             user="postgres",
-            port="1111",
-            password="root",
+            port=PORT,
+            password=PASSWORD,
             database="nonefolio"
         )
         yield connect

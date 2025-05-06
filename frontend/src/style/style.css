@@ -1,5 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=Cal+Sans&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Lexend:wght@100..900&display=swap');
-
+@font-face {
+    font-family: JetBrains Mono;
+    src: url(./fonts/JetBrainsMono.ttf);
+}
 :root {
     --primary: #7c6fa1;
     --secondary: #b7a3ff;
@@ -441,9 +443,13 @@ footer {
 }
 
 .main-content {
-    flex: 1;
+    flex: 1 1;
     margin-left: 250px;
     padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: space-evenly;
 }
 
 .header {

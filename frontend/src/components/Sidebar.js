@@ -2,13 +2,13 @@ import React, { useState, useEffect } from 'react';
 import '../style/style.css';
 
 const Sidebar = () => {
-  const [user, setUser] = useState({ nickname: '', role: 0 });
+  const [user, setUser] = useState({ email: '', role: 0 });
 
   useEffect(() => {
     // Загрузка данных пользователя
     const fetchUser = async () => {
       try {
-        const token = localStorage.getItem('access_token');
+        const token = localStorage.getItem('accessToken');
         const response = await fetch('http://localhost:5000/api/v1/users', {
           method: 'GET',
           headers: {
@@ -18,18 +18,19 @@ const Sidebar = () => {
         });
         if (!response.ok) throw new Error('Не удалось загрузить данные пользователя');
         const data = await response.json();
-        setUser(data.data.body);
+        console.log('Sidebar API response:', data); // Debug log
+        setUser(data.data.body || { email: '', role: 0 });
       } catch (error) {
         console.error('Ошибка загрузки данных пользователя:', error);
-        setUser({ nickname: '', role: 0 });
+        setUser({ email: 'Ошибка загрузки', role: 0 });
       }
     };
 
     fetchUser();
   }, []);
 
-  // Определяем имя и первую букву для аватара
-  const displayName = user.nickname || 'Пользователь';
+  // Определяем email и первую букву для аватара
+  const displayName = user.email.split("@")[0] || 'Пользователь';
   const avatarLetter = displayName[0]?.toUpperCase() || 'П';
   const roleText = user.role === 3 ? 'Владелец' : 'Участник';
 
