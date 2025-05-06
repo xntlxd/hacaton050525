@@ -87,9 +87,16 @@ class Users(NoneResource):
         except Exception as e:
             return ApiResponse.error(500, str(e), request.method)
 
-
+    @jwt_required()
     def delete(self):
-        pass
+        user_id = get_jwt_identity()
+        try:
+            account = user_delete(user_id)
+        except NotFound as e:
+            return ApiResponse.error(404, str(e), request.method)
+        except Exception as e:
+            return ApiResponse.error(500, str(e), request.method)
+        return ApiResponse.error(520, str(account), request.method)
 
 class Auth(NoneResource):
     def post(self):
@@ -377,8 +384,161 @@ class Cards(NoneResource):
             return ApiResponse.error(403, str(e), request.method)
         except Exception as e:
             return ApiResponse.error(500, str(e), request.method)
+        
+    @jwt_required()
+    def patch(self):
+        try:
+            card_id = self.validate(["card_id"]).get("card_id")
+        except BadRequest as e:
+            return ApiResponse.error(400, str(e), request.method)
+        user_id = get_jwt_identity()
+
+        if not can_edit(user_id, card_id=card_id):
+            return ApiResponse.error(403, "Forbidden!", request.method)
+
+        data = request.get_json()
+        title = data.get("title")
+        about = data.get("about")
+        brief_about = data.get("brief_about")
+        sell_by = data.get("sell_by")
+        status = data.get("status")
+        priority = data.get("priority")
+        external_resource = data.get("external_resource")
+        board_id = data.get("board_id")
+
+        print(title, about, brief_about, sell_by, status, priority, external_resource, board_id)
+
+        try:
+            new_cards = cards_edit(
+                card_id, title, about, brief_about, sell_by, status,
+                priority, external_resource, board_id
+            )
+
+            if new_cards:
+                return ApiResponse.success(new_cards, request.method)
+            return ApiResponse.error(500, str(new_cards), request.method)
+        except BadRequest as e:
+            return ApiResponse.error(400, str(e), request.method)
+        except NotFound as e:
+            return ApiResponse.error(404, str(e), request.method)
+        except Exception as e:
+            return ApiResponse.error(500, str(e), request.method)
+
+    @jwt_required()
+    def delete(self):
+        try:
+            card_id = self.validate(["card_id"]).get("card_id")
+        except BadRequest as e:
+            return ApiResponse.error(400, str(e), request.method)
+        
+        try:
+            deleted = cards_delete(card_id)
+        except NotFound as e:
+            return ApiResponse.error(404, str(e), request.method)
+        
+        return ApiResponse.error(520, str(deleted), request.method)
+        
+class Notification(NoneResource):
+    @jwt_required()
+    def get(self):
+        data = request.args
+        notification_id = data.get("notification_id", type=int)
+        user_id = get_jwt_identity()
+
+        notificaton = notifications_get(user_id, notification_id, 10)
+        return ApiResponse.success(notificaton, request.method)
+
+    
+    @jwt_required()
+    def delete(self):
+        data = request.get_json()
+        notification_id = data.get("notification_id")
+        if notification_check(notification_id):
+            return ApiResponse.success(None, request.method)
+        return ApiResponse.error(520, ApiResponse.ERROR[520], request.method)
+    
+class ProjectTags(NoneResource):
+    @jwt_required()
+    def get(self):
+        project_id = request.args.get("project_id", type=int)
+        tags = project_tags_get(project_id)
+        
+        return ApiResponse.success(tags, request.method)
+
+    @jwt_required()
+    def post(self):
+        try:
+            raw_data = self.validate(["tags", "project_id"])
+            tags = raw_data["tags"]
+            project_id = raw_data["project_id"]
+
+            list_tags = [tag.strip() for tag in tags.split(",") if tag.strip()]
+            if not list_tags:
+                return ApiResponse.error(400, "No valid tags provided", request.method)
+
+            tags = project_tags_insert(list_tags, project_id)
+            return ApiResponse.success(tags, request.method)
+
+        except BadRequest as e:
+            return ApiResponse.error(400, str(e), request.method)
+        except Exception as e:
+            return ApiResponse.error(500, str(e), request.method)
+
+    @jwt_required()
+    def delete(self):
+        try:
+            raw_data = self.validate(["tag", "project_id"])
+            tag = raw_data["tag"]
+            project_id = raw_data["project_id"]
+
+            project_tags_delete(project_id, tag)
+        except NotFound as e:
+            return ApiResponse.error(404, str(e), request.method)
+        except Exception as e:
+            return ApiResponse.error(500, str(e), request.method)
+        
+class CardsTags(NoneResource):
+    @jwt_required()
+    def get(self):
+        card_id = request.args.get("card_id", type=int)
+        tags = project_tags_get(card_id)
+        
+        return ApiResponse.success(tags, request.method)
+
+    @jwt_required()
+    def post(self):
+        try:
+            raw_data = self.validate(["tags", "project_id"])
+            tags = raw_data["tags"]
+            project_id = raw_data["project_id"]
+
+            list_tags = [tag.strip() for tag in tags.split(",") if tag.strip()]
+            if not list_tags:
+                return ApiResponse.error(400, "No valid tags provided", request.method)
+
+            tags = project_tags_insert(list_tags, project_id)
+            return ApiResponse.success(tags, request.method)
+
+        except BadRequest as e:
+            return ApiResponse.error(400, str(e), request.method)
+        except Exception as e:
+            return ApiResponse.error(500, str(e), request.method)
+
+    @jwt_required()
+    def delete(self):
+        try:
+            raw_data = self.validate(["tag", "project_id"])
+            tag = raw_data["tag"]
+            project_id = raw_data["project_id"]
+
+            project_tags_delete(project_id, tag)
+        except NotFound as e:
+            return ApiResponse.error(404, str(e), request.method)
+        except Exception as e:
+            return ApiResponse.error(500, str(e), request.method)
 
 __all__ = [
     "Users", "Auth", "Refresh", "Projects",
-    "Collaborators", "Boards", "Cards"
+    "Collaborators", "Boards", "Cards", "Notification",
+    "ProjectTags", 
 ]

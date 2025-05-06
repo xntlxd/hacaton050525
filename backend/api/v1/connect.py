@@ -1,9 +1,9 @@
 import psycopg2
-from psycopg2 import sql
 from contextlib import contextmanager
 from werkzeug.exceptions import NotFound, BadRequest, Forbidden, Conflict
 from werkzeug.security import check_password_hash
 from typing import Optional
+from datetime import datetime, date
 
 @contextmanager
 def dbinit():
@@ -15,6 +15,13 @@ def dbinit():
             password="sudo",
             database="nonefolio"
         )
+        # connect = psycopg2.connect(
+        #     host="localhost",
+        #     user="postgres",
+        #     port="1111",
+        #     password="root",
+        #     database="nonefolio"
+        # )
         yield connect
     except psycopg2.Error as e:
         print(f"Database connection failed: {e}")
@@ -145,6 +152,14 @@ def user_role(uid: int):
         if role is None:
             return 0
         return role[0]
+    
+def user_delete(uid: int):
+    with dbinit() as connect:
+        cursor = connect.cursor()
+
+        cursor.execute("UPDATE users SET deleted = %s WHERE id = %s", (True, uid))
+        connect.commit()
+        raise NotFound("User not found!")        
 
 def project_create(title: str, description: str, author: int):
     DEFAULT = ["Идея", "Проработка", "Реализация", "Готово"]
@@ -267,7 +282,6 @@ def project_info(project_id: int | None = None, title: str | None = None, author
             }
 
 def format_project_data(connection, project_data):
-    """Вспомогательная функция для форматирования данных проекта"""
     cursor = connection.cursor()
     project_id = project_data[0]
     
@@ -287,6 +301,18 @@ def format_project_data(connection, project_data):
     users_columns = ['user_id', 'role', 'added_at', 'email', 'nickname']
     users_list = [dict(zip(users_columns, user)) for user in users_data]
     
+    cursor.execute("""
+        SELECT 
+            id, title
+        FROM boards
+        WHERE project_id = %s
+        ORDER BY id
+        """, (project_id,))
+    
+    boards_data = cursor.fetchall()
+    boards_columns = ['id', 'title']
+    boards_list = [dict(zip(boards_columns, board)) for board in boards_data]
+    
     for field in ['created_at', 'updated_at']:
         if project_dict.get(field):
             project_dict[field] = project_dict[field].isoformat()
@@ -296,6 +322,7 @@ def format_project_data(connection, project_data):
             user['added_at'] = user['added_at'].isoformat()
     
     project_dict['users'] = users_list
+    project_dict['boards'] = boards_list
     return project_dict
     
 def collaborators_add(project_id: int, user_id: int, role: int):
@@ -494,6 +521,96 @@ def cards_info(board_id: int | None = None, card_id: int | None = None) -> list[
         result = [dict(zip(column_names, row)) for row in cards_data]
         
         return result[0] if card_id is not None else result
+    
+def cards_edit(
+    card_id: int,
+    title: str | None = None,
+    about: str | None = None,
+    brief_about: str | None = None,
+    sell_by: date | None = None,
+    status: str | None = None,
+    priority: int | None = None,
+    external_resource: str | None = None,
+    board_id: int | None = None
+) -> dict:
+    updates = []
+    params = []
+    
+    if title is not None:
+        updates.append("title = %s")
+        params.append(title)
+    if about is not None:
+        updates.append("about = %s")
+        params.append(about)
+    if brief_about is not None:
+        updates.append("brief_about = %s")
+        params.append(brief_about)
+    if sell_by is not None:
+        updates.append("sell_by = %s")
+        params.append(sell_by)
+    if status is not None:
+        updates.append("status = %s")
+        params.append(status)
+    if priority is not None:
+        updates.append("priority = %s")
+        params.append(priority)
+    if external_resource is not None:
+        updates.append("external_resource = %s")
+        params.append(external_resource)
+    if board_id is not None:
+        updates.append("board_id = %s")
+        params.append(board_id)
+    
+    if not updates:
+        raise BadRequest("No fields to update provided")
+        
+    with dbinit() as conn:
+        cursor = conn.cursor()
+        
+        update_sql = f"""
+            UPDATE cards 
+            SET {', '.join(updates)}
+            WHERE id = %s
+            RETURNING *
+            """
+        params.append(card_id)
+        
+        cursor.execute(update_sql, params)
+        updated_card = cursor.fetchone()
+        
+        if not updated_card:
+            raise NotFound("Card not found")
+        
+        cursor.execute("""
+            SELECT cards.*, 
+                   b.title as board_title,
+                   p.title as project_title
+            FROM cards
+            JOIN boards b ON cards.board_id = b.id
+            JOIN projects p ON b.project_id = p.id
+            WHERE cards.id = %s
+            """, (card_id,))
+        
+        card_data = cursor.fetchone()
+        if not card_data:
+            raise NotFound("Card not found!")
+
+        column_names = [desc[0] for desc in cursor.description]
+        card_dict = dict(zip(column_names, card_data))
+        
+        for date_field in ['created_at', 'updated_at', 'sell_by']:
+            if card_dict.get(date_field):
+                card_dict[date_field] = card_dict[date_field].isoformat()
+        
+        conn.commit()
+        return card_dict
+    
+def cards_delete(uid: int):
+    with dbinit() as connect:
+        cursor = connect.cursor()
+        cursor.execute("DELETE FROM cards WHERE id = %s", (uid, ))
+        connect.commit()
+        raise NotFound("Card has been deleted!")
 
 def responsible_add(card_id: int, user_id: int, appointed_by: int) -> dict:
     with dbinit() as conn:
@@ -550,22 +667,37 @@ def notification_create(to_whom: int, text: str, priority: int = 0) -> dict:
         conn.commit()
         return notif_dict
 
-def notifications_get(user_id: int, limit: int = 10) -> list[dict]:
+def notifications_get(user_id: int, notification_id: int | None = None, limit: int = 10) -> list[dict]:
     with dbinit() as conn:
         cursor = conn.cursor()
-        
-        cursor.execute("""
+        option = [user_id, ]
+        where = ""
+
+        if notification_id:
+            where = " AND id = %s"
+            option.append(notification_id)
+
+        print(limit, option, type(option))
+        option.append(limit)
+        cursor.execute(f"""
             SELECT * FROM notifications 
-            WHERE to_whom = %s
+            WHERE to_whom = %s{where}
             ORDER BY id DESC
             LIMIT %s
             """,
-            (user_id, limit)
+            tuple(option)
         )
         
         notif_data = cursor.fetchall()
         column_names = [desc[0] for desc in cursor.description]
         return [dict(zip(column_names, row)) for row in notif_data]
+    
+def notification_check(notification_id: int):
+    with dbinit() as connect:
+        cursor = connect.cursor()
+        cursor.execute("UPDATE notification SET checked = %s WHERE id = %s", (True, notification_id))
+        connect.commit()
+        return True
     
 def can_edit(user_id: int, project_id: int | None = None, board_id: int | None = None, card_id: int | None = None) -> bool:
     sql = ""
@@ -606,14 +738,162 @@ def can_edit(user_id: int, project_id: int | None = None, board_id: int | None =
             
         role = role_data[0]
         return role >= 2
+    
+def project_tags_insert(tags: list | str, project_id: int) -> list:
+    if isinstance(tags, str):
+        tags = [tag.strip() for tag in tags.split(",") if tag.strip()]
+    
+    if not tags:
+        raise ValueError("No valid tags provided")
+    
+    with dbinit() as connect:
+        cursor = connect.cursor()
+        
+        try:
+            cursor.executemany(
+                "INSERT INTO projects_tags (tag, project_id) VALUES (%s, %s) ON CONFLICT DO NOTHING",
+                [(tag, project_id) for tag in tags]
+            )
+            
+            connect.commit()
+            
+            cursor.execute(
+                "SELECT id, tag, project_id FROM projects_tags WHERE project_id = %s",
+                (project_id,)
+            )
+            prjstags_data = cursor.fetchall()
+            
+            if not prjstags_data:
+                raise NotFound("No tags found for the project")
+            
+            column_names = [desc[0] for desc in cursor.description]
+            prjstags_list = [dict(zip(column_names, row)) for row in prjstags_data]
+            
+            return prjstags_list
+            
+        except Exception as e:
+            connect.rollback()
+            raise
+        finally:
+            cursor.close()
+
+def project_tags_get(project_id: int):
+    with dbinit() as connect:
+        cursor = connect.cursor()
+        cursor.execute("SELECT tag FROM projects_tags WHERE project_id = %s", (project_id, ))
+        prjtags_data = cursor.fetchall()
+        if not prjtags_data:
+            raise NotFound("Tags not found!")
+        
+        project_tags = list()
+        for row in prjtags_data:
+            project_tags.append(row[0])
+
+        return project_tags
+
+def project_tags_search(tag: str):
+    with dbinit() as connect:
+        cursor = connect.cursor()
+        cursor.execute("SELECT project_id FROM projects_tags WHERE tag = %s", (tag, ))
+        prjtags_data = cursor.fetchall()
+        if not prjtags_data:
+            raise NotFound("Tags not found!")
+        
+        project_tags = list()
+        for row in prjtags_data:
+            project_tags.append(row[0])
+
+        return project_tags
+    
+def project_tags_delete(project_id: int, tag: str):
+    with dbinit() as connect:
+        cursor = connect.cursor()
+        cursor.execute("DELETE FROM projects_tags WHERE project_id = %s AND tag = %s", (project_id, tag))
+        connect.commit()
+        raise NotFound("Tag has been deleted!")
+
+def card_tags_insert(tags: list | str, card_id: int) -> list:
+    if isinstance(tags, str):
+        tags = [tag.strip() for tag in tags.split(",") if tag.strip()]
+    
+    if not tags:
+        raise ValueError("No valid tags provided")
+    
+    with dbinit() as connect:
+        cursor = connect.cursor()
+        
+        try:
+            cursor.executemany(
+                "INSERT INTO cards_tags (tag, card_id) VALUES (%s, %s) ON CONFLICT DO NOTHING",
+                [(tag, card_id) for tag in tags]
+            )
+            
+            connect.commit()
+            
+            cursor.execute(
+                "SELECT id, tag, card_id FROM cards_tags WHERE card_id = %s",
+                (card_id,)
+            )
+            tags_data = cursor.fetchall()
+            
+            if not tags_data:
+                raise NotFound("No tags found for the card")
+            
+            column_names = [desc[0] for desc in cursor.description]
+            tags_list = [dict(zip(column_names, row)) for row in tags_data]
+            
+            return tags_list
+            
+        except Exception as e:
+            connect.rollback()
+            raise
+        finally:
+            cursor.close()
+
+def card_tags_get(card_id: int):
+    with dbinit() as connect:
+        cursor = connect.cursor()
+        cursor.execute("SELECT tag FROM cards_tags WHERE card_id = %s", (card_id, ))
+        tags_data = cursor.fetchall()
+        if not tags_data:
+            raise NotFound("Tags not found!")
+        
+        card_tags = list()
+        for row in tags_data:
+            card_tags.append(row[0])
+
+        return card_tags
+
+def card_tags_search(tag: str):
+    with dbinit() as connect:
+        cursor = connect.cursor()
+        cursor.execute("SELECT card_id FROM cards_tags WHERE tag = %s", (tag, ))
+        tags_data = cursor.fetchall()
+        if not tags_data:
+            raise NotFound("Tags not found!")
+        
+        card_tags = list()
+        for row in tags_data:
+            card_tags.append(row[0])
+
+        return card_tags
+    
+def card_tags_delete(card_id: int, tag: str):
+    with dbinit() as connect:
+        cursor = connect.cursor()
+        cursor.execute("DELETE FROM cards_tags WHERE card_id = %s AND tag = %s", (card_id, tag))
+        connect.commit()
+        raise NotFound("Tag has been deleted!")
 
 __all__ = [
-    "user_registration", "user_login", "user_getinfo", "user_edit", "user_role",
+    "user_registration", "user_login", "user_getinfo", "user_edit", "user_role", "user_delete",
     "project_create", "project_info",
     "collaborators_add", "collaborators_getrole", "collaborators_delete", "collaborators_change", "collaborators_exist",
     "boards_create", "boards_info",
-    "cards_create", "cards_info",
+    "cards_create", "cards_info", "cards_edit", "cards_delete",
     "responsible_add", "responsible_get",
-    "notification_create", "notifications_get",
-    "can_edit"
+    "notification_create", "notifications_get", "notification_check",
+    "can_edit",
+    "project_tags_insert", "project_tags_get", "project_tags_search", "project_tags_delete",
+    "card_tags_insert", "card_tags_get", "card_tags_search", "card_tags_delete",
 ]
