@@ -3,10 +3,11 @@ from api.v1.resource import *
 from flask_restful import Api
 from flask_jwt_extended import JWTManager
 from config import *
+from flask_cors import CORS
 
 apiclient = Api(app)
 jwt = JWTManager(app)
-
+CORS(app, supports_credentials=True)
 apiclient.add_resource(Users, "/api/v1/users")
 apiclient.add_resource(Auth, "/api/v1/users/auth")
 apiclient.add_resource(Refresh, "/api/v1/refresh")
