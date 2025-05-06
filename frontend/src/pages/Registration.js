@@ -15,7 +15,7 @@ const Registration = () => {
     
     try {
       await registerUser(email, password);
-      navigate("/login");
+      navigate("/login", { state: { registeredEmail: email } });
     } catch (err) {
       setError(err.message);
     }
