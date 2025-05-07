@@ -1,8 +1,10 @@
 import Sidebar from "../components/Sidebar";
 import "../style/style.css";
 import { useState, useRef, useCallback, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Create_Project = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     projectName: "",
     projectDescription: "",
@@ -21,7 +23,7 @@ const Create_Project = () => {
   const fileInputRef = useRef(null);
   const dropRef = useRef(null);
 
-  // Очистка превью при размонтировании
+  
   useEffect(() => {
     return () => {
       if (previewUrl) {
@@ -30,7 +32,7 @@ const Create_Project = () => {
     };
   }, [previewUrl]);
 
-  // Проверка валидности токена
+  
   const validateToken = () => {
     const token = localStorage.getItem("accessToken");
     if (!token || token.split('.').length !== 3) {
@@ -105,7 +107,7 @@ const Create_Project = () => {
     }
   }, [previewUrl]);
 
-  // Обработчики drag-and-drop
+  
   const handleDragOver = useCallback((e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -175,17 +177,15 @@ const Create_Project = () => {
     try {
       setIsLoading(true);
       
-      // Подготовка данных в формате JSON
+      
       const projectData = {
         title: formData.projectName,
         description: formData.projectDescription,
         tags: formData.projectTags || undefined,
         start_date: formData.projectStart || undefined,
         end_date: formData.projectEnd || undefined,
-        // Файл нужно обработать отдельно, так как JSON не поддерживает бинарные данные
       };
   
-      // 1. Сначала создаем проект с основными данными
       const projectResponse = await fetch("http://localhost:5000/api/v1/projects", {
         method: "POST",
         headers: { 
@@ -203,7 +203,6 @@ const Create_Project = () => {
   
       const projectId = projectResult.data.body.id;
   
-      // 2. Если есть обложка, загружаем ее отдельным запросом
       if (formData.projectCover) {
         const coverFormData = new FormData();
         coverFormData.append('cover', formData.projectCover);
@@ -220,7 +219,7 @@ const Create_Project = () => {
         }
       }
   
-      // 3. Добавляем участников
+      
       for (const participant of participants) {
         const collaboratorResponse = await fetch("http://localhost:5000/api/v1/projects/collaborators", {
           method: "POST",
@@ -241,9 +240,9 @@ const Create_Project = () => {
         }
       }
   
-      // Успешное завершение
+      
       setSuccess("Проект успешно создан!");
-      // Сброс формы
+      navigate(`/projects/${projectId}`);
       setFormData({
         projectName: "",
         projectDescription: "",
@@ -266,7 +265,7 @@ const Create_Project = () => {
     }
   };
 
-  // ... (остальная часть JSX остается без изменений)
+  
 
   return (
     <div className="dashboard">
