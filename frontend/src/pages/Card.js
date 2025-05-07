@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import '../style/style.css';
+import Sidebar from '../components/Sidebar';
 
 // Компонент для отображения и управления карточками на доске
 const Card = () => {
@@ -381,6 +382,8 @@ const Card = () => {
   };
 
   return (
+    <>
+    <Sidebar />
     <DragDropContext onDragEnd={onDragEnd}>
       <main className="main-content p-4">
         {error && <div className="text-red-500 mb-4">{error}</div>}
@@ -572,6 +575,7 @@ const Card = () => {
         )}
       </main>
     </DragDropContext>
+    </>
   );
 };
 
