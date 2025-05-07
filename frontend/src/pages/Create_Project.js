@@ -242,7 +242,7 @@ const Create_Project = () => {
   
       
       setSuccess("Проект успешно создан!");
-      navigate(`/projects/${projectId}`);
+      navigate(`/project/${projectId}`);
       setFormData({
         projectName: "",
         projectDescription: "",

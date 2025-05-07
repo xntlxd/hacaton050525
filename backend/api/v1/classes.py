@@ -202,7 +202,7 @@ class bValidate(BaseModel):
 class cValidate(BaseModel):
     """Валидация данных карточки."""
     title: str
-    about: str
+    about: str | None = None
     brief_about: Optional[str] = None
     sell_by: Optional[str] = None
     status: str = "todo"

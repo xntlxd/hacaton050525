@@ -38,13 +38,13 @@ const Sidebar = () => {
     <aside className="sidebar">
       <div className="sidebar-header">
         <a href="/dashboard" className="sidebar-logo">Nonefolio</a>
-        <div className="user-profile">
+        <a href="/profile"><div className="user-profile">
           <div className="user-avatar">{avatarLetter}</div>
           <div className="user-info">
             <h4>{displayName}</h4>
             <p>{roleText}</p>
           </div>
-        </div>
+        </div></a>
       </div>
       <nav className="sidebar-menu">
         <p className="menu-title">Основное</p>

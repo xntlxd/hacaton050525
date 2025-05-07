@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 
 const ProjectView = () => {
@@ -165,6 +165,14 @@ const ProjectView = () => {
                   </div>
                 </div>
               </div>
+              <Link
+                  to={`/project/${projectId}/cards`}
+                  className="inline-block bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors duration-200"
+              >
+                <div className="project-card">
+                    <div className="sidebar-section cardbtn">Перейти к доскам</div>
+                </div>
+              </Link>
             </div>
           </div>
         </div>

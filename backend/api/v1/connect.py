@@ -410,6 +410,37 @@ def boards_info(project_id: int, board_id: Optional[int] = None) -> List[Dict[st
         result = [dict(zip(column_names, row)) for row in board_data]
         logger.info(f"Retrieved boards: project_id={project_id}, count={len(result)}")
         return result[0] if board_id is not None else result
+    
+def boards_edit(board_id: int, title: Optional[str] = None) -> Dict[str, Any]:
+    """Редактирование доски."""
+    updates = []
+    params = []
+    if title is not None:
+        updates.append("title = %s")
+        params.append(title)
+    
+    if not updates:
+        raise BadRequest("No fields to update provided")
+    
+    with dbinit() as connect:
+        cursor = connect.cursor()
+        try:
+            update_sql = f"UPDATE boards SET {', '.join(updates)} WHERE id = %s RETURNING *"
+            params.append(board_id)
+            cursor.execute(update_sql, params)
+            updated_board = cursor.fetchone()
+            if not updated_board:
+                raise NotFound("Board not found")
+            
+            column_names = [desc[0] for desc in cursor.description]
+            board_dict = dict(zip(column_names, updated_board))
+            connect.commit()
+            logger.info(f"Edited board: id={board_id}")
+            return board_dict
+        except Exception as e:
+            connect.rollback()
+            logger.error(f"Error editing board: {str(e)}")
+            raise
 
 def cards_create(
     board_id: int,
@@ -837,7 +868,7 @@ __all__ = [
     "user_registration", "user_login", "user_getinfo", "user_edit", "user_role", "user_delete",
     "project_create", "project_info", "format_project_data",
     "collaborators_add", "collaborators_delete", "collaborators_exist", "collaborators_getrole", "collaborators_change",
-    "boards_create", "boards_info",
+    "boards_create", "boards_info", "boards_edit", 
     "cards_create", "cards_info", "cards_edit", "cards_delete",
     "responsible_add", "responsible_get",
     "notification_create", "notifications_get", "notification_check",

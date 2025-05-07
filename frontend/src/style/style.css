@@ -456,7 +456,7 @@ footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 2rem;
+    /* margin-bottom: 2rem; */
 }
 
 .page-title h1 {
@@ -1299,6 +1299,7 @@ textarea.form-control {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-top: 2%;
 }
 
 .edit-btn {
@@ -2225,6 +2226,7 @@ textarea.form-control {
     gap: 1.5rem;
     align-items: flex-start;
     padding-bottom: 1rem;
+    height: 90.1%;
 }
 
 .column {
@@ -2397,6 +2399,162 @@ textarea.form-control {
     color: var(--dark);
 }
 
+/* Стили для редактируемых заголовков карточек и досок */
+.card-title-input,
+.column-title-input {
+  width: 100%;
+  padding: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.card-title-input:focus,
+.column-title-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+/* Скрытие input при отсутствии редактирования */
+.card-title,
+.column-title {
+  cursor: text;
+}
+
+/* Остальные существующие стили */
+.main-content {
+  padding: 16px;
+}
+
+.project-board {
+  margin-top: 16px;
+}
+
+.board-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.board-title h1 {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.board-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.board-actions button {
+  padding: 8px 16px;
+  border-radius: 4px;
+}
+
+.column {
+  width: 288px;
+  background-color: #f3f4f6;
+  border-radius: 8px;
+  padding: 8px;
+}
+
+.column-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.column-title {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.column-actions button {
+  color: #6b7280;
+}
+
+.cards-list {
+  min-height: 20px;
+}
+
+.card {
+  background-color: white;
+  padding: 12px;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.card-labels {
+  margin-bottom: 8px;
+}
+
+.card-label {
+  height: 8px;
+  border-radius: 4px;
+}
+
+.card-title {
+  font-weight: 500;
+}
+
+.card-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.card-avatars {
+  display: flex;
+  gap: 4px;
+}
+
+.card-avatar {
+  width: 24px;
+  height: 24px;
+  background-color: #3b82f6;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+}
+
+.card-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.card-actions button {
+  font-size: 14px;
+  color: #3b82f6;
+}
+
+.add-card {
+  margin-top: 8px;
+  color: #3b82f6;
+  cursor: pointer;
+}
+
+.add-column {
+  width: 288px;
+  background-color: #f3f4f6;
+  border-radius: 8px;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
 @media (max-width: 768px) {
     .board-header {
         flex-direction: column;
@@ -2408,4 +2566,11 @@ textarea.form-control {
         min-width: 260px;
         width: 260px;
     }
+}
+
+.cardbtn {
+    text-align: center;
+    padding: 8% 5%;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    color: white;
 }

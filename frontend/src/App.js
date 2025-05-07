@@ -10,6 +10,7 @@ import "../src/style/style.css";
 import ProtectedRoute from './services/ProtectedRoute';
 import Notifications from './pages/Notifications';
 import { useParams } from 'react-router-dom';
+import Card from './pages/Card';
 
 function App() {
   const ProjectPage = () => {
@@ -24,22 +25,22 @@ function App() {
         <Route path="/registration" element={<Registration />} />
         <Route path="/profile" element={
           <ProtectedRoute>
-          <Profile />
+            <Profile />
           </ProtectedRoute>
-          } />
+        } />
         <Route path="/dashboard" element={
           <ProtectedRoute>
-          <My_Projects />
+            <My_Projects />
           </ProtectedRoute>
-          } />
+        } />
         <Route path="/create_project" element={
           <ProtectedRoute>
-          <Create_Project />
+            <Create_Project />
           </ProtectedRoute>
-          } />
+        } />
         <Route path="/notifications" element={
           <ProtectedRoute>
-          <Notifications />
+            <Notifications />
           </ProtectedRoute>
           } />
         <Route path="/project/:projectId" element={
@@ -52,6 +53,11 @@ function App() {
           <ProjectView />
           </ProtectedRoute>
           } />
+        <Route path="/project/:projectId/cards" element={
+          <ProtectedRoute>
+            <Card />
+          </ProtectedRoute>
+        } />
       </Routes>
     </Router>
   );

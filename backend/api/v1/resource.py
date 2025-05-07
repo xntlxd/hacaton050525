@@ -357,6 +357,30 @@ class Boards(NoneResource):
         except Exception as e:
             logger.error(f"POST error: {str(e)}")
             return ApiResponse.error(500, str(e), request.method)
+        
+    @jwt_required()
+    def patch(self):
+        """Обновление доски."""
+        try:
+            raw_data = self.validate(["board_id", "title"])
+            board_id = raw_data["board_id"]
+            user_id = get_jwt_identity()
+            if not can_edit(user_id, board_id=board_id):
+                raise Forbidden("Insufficient permissions")
+            updated_board = boards_edit(board_id, raw_data["title"])
+            return ApiResponse.success(updated_board, request.method)
+        except BadRequest as e:
+            logger.error(f"PATCH error: {str(e)}")
+            return ApiResponse.error(400, str(e), request.method)
+        except NotFound as e:
+            logger.error(f"PATCH error: {str(e)}")
+            return ApiResponse.error(404, str(e), request.method)
+        except Forbidden as e:
+            logger.error(f"PATCH error: {str(e)}")
+            return ApiResponse.error(403, str(e), request.method)
+        except Exception as e:
+            logger.error(f"PATCH error: {str(e)}")
+            return ApiResponse.error(500, str(e), request.method)
 
 class Cards(NoneResource):
     """Ресурс для управления карточками."""
@@ -386,14 +410,13 @@ class Cards(NoneResource):
 
     @jwt_required()
     def post(self):
-        """Создание новой карточки."""
         try:
             raw_data = self.validate(["board_id", "title", "about"], ["brief_about", "sell_by", "status", "priority", "external_resource"])
             user_id = get_jwt_identity()
             valid_data = cValidate(**raw_data).model_dump()
             if not can_edit(user_id, board_id=raw_data["board_id"]):
                 raise Forbidden("Insufficient permissions")
-            new_card = cards_create(**valid_data)
+            new_card = cards_create(raw_data["board_id"], raw_data["title"], raw_data["about"], raw_data["brief_about"], raw_data["sell_by"], raw_data["status"], raw_data["priority"], raw_data["external_resource"])
             return ApiResponse.created(new_card, request.method)
         except BadRequest as e:
             logger.error(f"POST error: {str(e)}")
@@ -402,20 +425,31 @@ class Cards(NoneResource):
             logger.error(f"POST error: {str(e)}")
             return ApiResponse.error(403, str(e), request.method)
         except Exception as e:
-            logger.error(f"POST error: {str(e)}")
+            logger.error(f"POST error!: {str(e)}")
             return ApiResponse.error(500, str(e), request.method)
 
     @jwt_required()
     def patch(self):
-        """Обновление карточки."""
+        """Обновление карточки."""   
         try:
             raw_data = self.validate(["card_id"], ["title", "about", "brief_about", "sell_by", "status", "priority", "external_resource", "board_id"])
             card_id = raw_data["card_id"]
             user_id = get_jwt_identity()
+            print(raw_data)
             if not can_edit(user_id, card_id=card_id):
                 raise Forbidden("Insufficient permissions")
             valid_data = cValidate(**raw_data).model_dump() if any(k in raw_data for k in ["title", "about"]) else raw_data
-            new_cards = cards_edit(card_id, **valid_data)
+            new_cards = cards_edit(
+                card_id,
+                raw_data.get("title"),
+                raw_data.get("about"),
+                raw_data.get("brief_about"),
+                raw_data.get("sell_by"),
+                raw_data.get("status"),
+                raw_data.get("priority"),
+                raw_data.get("external_resource"),
+                raw_data.get("board_id")
+            )
             return ApiResponse.success(new_cards, request.method)
         except BadRequest as e:
             logger.error(f"PATCH error: {str(e)}")
