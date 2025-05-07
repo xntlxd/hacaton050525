@@ -4,13 +4,18 @@ import Login from "./pages/Login";
 import Registration from "./pages/Registration";
 import Profile from "./pages/Profile";
 import My_Projects from "./pages/My_Projects";
-import My_Works from "./pages/My_Works";
+import ProjectView from './pages/ProjectView';
 import Create_Project from "./pages/Create_Project";
 import "../src/style/style.css";
 import ProtectedRoute from './services/ProtectedRoute';
 import Notifications from './pages/Notifications';
+import { useParams } from 'react-router-dom';
 
 function App() {
+  const ProjectPage = () => {
+    const { projectId } = useParams();
+    return <ProjectView projectId={parseInt(projectId)} />;
+  };
   return (
     <Router>
       <Routes>
@@ -37,6 +42,7 @@ function App() {
           <Notifications />
           </ProtectedRoute>
           } />
+        <Route path="/project/:projectId" element={<ProjectPage />} />
       </Routes>
     </Router>
   );

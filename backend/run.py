@@ -7,7 +7,16 @@ from flask_cors import CORS
 
 apiclient = Api(app)
 jwt = JWTManager(app)
-CORS(app, supports_credentials=True)
+CORS(app, 
+     resources={
+         r"/api/*": {
+             "origins": "http://localhost:3000",
+             "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+             "allow_headers": ["Authorization", "Content-Type"],
+             "supports_credentials": True,  # Ключевая настройка
+             "expose_headers": ["Authorization"]
+         }
+     })
 
 apiclient.add_resource(Users, "/api/v1/users")
 apiclient.add_resource(Auth, "/api/v1/users/auth")
