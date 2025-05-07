@@ -42,7 +42,16 @@ function App() {
           <Notifications />
           </ProtectedRoute>
           } />
-        <Route path="/project/:projectId" element={<ProjectPage />} />
+        <Route path="/project/:projectId" element={
+          <ProtectedRoute>
+          <ProjectPage />
+          </ProtectedRoute>
+          } />
+        <Route path="/project/:projectId" element={
+          <ProtectedRoute>
+          <ProjectView />
+          </ProtectedRoute>
+          } />
       </Routes>
     </Router>
   );

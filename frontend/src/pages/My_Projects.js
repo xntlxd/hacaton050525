@@ -112,7 +112,7 @@ const My_Projects = () => {
         <div className="header">
           <div className="page-title">
             <h1>Мои проекты</h1>
-            <p className='desc'>Здесь собраны все ваши текущие и завершенные проекты</p>
+            <p className='desc2'>Здесь собраны все ваши текущие и завершенные проекты</p>
           </div>
         </div>
 
@@ -120,8 +120,8 @@ const My_Projects = () => {
           <h2 className="section-title">Созданные проекты</h2>
           {ownerProjects.length === 0 ? (
             <div className="no-projects-message">
-              <h3 className='desc'>Вы не создавали проекты</h3>
-              <p className='desc'>Начните свой первый проект и воплотите идеи в жизнь!</p>
+              <h3 className='desc2'>Вы не создавали проекты</h3>
+              <p className='desc2'>Начните свой первый проект и воплотите идеи в жизнь!</p>
             </div>
           ) : (
             <div className="projects-grid">
@@ -134,8 +134,8 @@ const My_Projects = () => {
           <h2 className="section-title">Проекты, в которых вы участвуете</h2>
           {memberProjects.length === 0 ? (
             <div className="no-projects-message">
-              <h3 className='desc'>Вы не состоите в чужих проектах</h3>
-              <p className='desc'>Присоединяйтесь к проектам коллег или создайте свой!</p>
+              <h3 className='desc2'>Вы не состоите в чужих проектах</h3>
+              <p className='desc2'>Присоединяйтесь к проектам коллег или создайте свой!</p>
             </div>
           ) : (
             <div className="projects-grid">
