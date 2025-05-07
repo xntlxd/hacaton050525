@@ -42,17 +42,13 @@ function App() {
           <ProtectedRoute>
             <Notifications />
           </ProtectedRoute>
-          } />
-        <Route path="/project/:projectId" element={
+        } />
+        <Route path="/project/:projectId" element={<ProjectPage />} />
+        <Route path="/projects/:projectId/tasks" element={
           <ProtectedRoute>
-          <ProjectPage />
+            <Card />
           </ProtectedRoute>
-          } />
-        <Route path="/project/:projectId" element={
-          <ProtectedRoute>
-          <ProjectView />
-          </ProtectedRoute>
-          } />
+        } />
         <Route path="/project/:projectId/cards" element={
           <ProtectedRoute>
             <Card />
